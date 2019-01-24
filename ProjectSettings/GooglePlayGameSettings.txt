@@ -1,0 +1,10 @@
+lastUpgrade=00958
+proj.pluginVersion=0.9.58
+proj.AppId=197851279029
+and.BundleId=com.JRSGames.SpaceRush
+proj.classDir=Assets
+proj.ConstantsClassName=GPGSIds
+and.ResourceData=%3c%3fxml+version%3d%221.0%22+encoding%3d%22utf-8%22%3f%3e%0d%0a%3c%21--%0d%0aGoogle+Play+game+services+IDs.%0d%0aSave+this+file+as+res%2fvalues%2fgames-ids.xml+in+your+project.%0d%0a--%3e%0d%0a%3cresources%3e%0d%0a++%3cstring+name%3d%22app_id%22%3e197851279029%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22package_name%22%3ecom.JRSGames.SpaceRush%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_first_time_flier%22%3eCgkItd3rhuEFEAIQAg%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_constant_flier%22%3eCgkItd3rhuEFEAIQAw%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_first_powerup%22%3eCgkItd3rhuEFEAIQBA%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_powerup_addict%22%3eCgkItd3rhuEFEAIQBQ%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_bad_way_to_go%22%3eCgkItd3rhuEFEAIQBg%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_im_taking_you_with_me%22%3eCgkItd3rhuEFEAIQBw%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_love_to_fly%22%3eCgkItd3rhuEFEAIQCA%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_survival%22%3eCgkItd3rhuEFEAIQCQ%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_immortal%22%3eCgkItd3rhuEFEAIQCg%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22achievement_hardcore%22%3eCgkItd3rhuEFEAIQCw%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22leaderboard_high_scores%22%3eCgkItd3rhuEFEAIQAQ%3c%2fstring%3e%0d%0a%3c%2fresources%3e%0d%0a
+and.ClientId=
+proj.requireGPlus=false
+android.SetupDone=true
