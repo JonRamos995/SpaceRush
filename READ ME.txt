@@ -4,4 +4,9 @@ They have been removed from the application for now until fixed.
 
 Included in the "Requirements" folder is the .unity package for the Google Services.
 
+This game is played in 1080 x 1920 Resolution!
+
+Width  1080
+Height 1920
+
 J.R.
