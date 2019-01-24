@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Analytics;
 using System.Collections;
-using GooglePlayGames;
+//using GooglePlayGames;
 using UnityEngine.SocialPlatforms;
 
 public class MainMenuControllerScript : MonoBehaviour {
@@ -23,7 +23,7 @@ public class MainMenuControllerScript : MonoBehaviour {
       //  if (Social.localUser.authenticated)
       //      Social.ShowLeaderboardUI();
 
-        PlayGamesPlatform.Instance.ShowLeaderboardUI("CgkItd3rhuEFEAIQAQ");
+        //PlayGamesPlatform.Instance.ShowLeaderboardUI("CgkItd3rhuEFEAIQAQ");
 
     }
 
@@ -34,17 +34,14 @@ public class MainMenuControllerScript : MonoBehaviour {
 
     public void SignOut()
     {
-        PlayGamesPlatform.Instance.SignOut();
+        //PlayGamesPlatform.Instance.SignOut();
     }
 
     public void SignIn()
     {
-        PlayGamesPlatform.Instance.Authenticate((bool success) =>
-            {
+        //PlayGamesPlatform.Instance.Authenticate((bool success) =>
+        //    {
                 
-            });
+        //    });
     }
-
-
-
 }

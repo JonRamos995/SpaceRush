@@ -1,0 +1,7 @@
+Problems with GooglePlayServices when being pulled down from the repo.
+
+They have been removed from the application for now until fixed. 
+
+Included in the "Requirements" folder is the .unity package for the Google Services.
+
+J.R.
