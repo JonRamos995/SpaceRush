@@ -32,5 +32,19 @@ namespace SpaceRush.Core
             // Also log to Unity Console for debugging
             Debug.Log(message);
         }
+
+        public static void LogError(string message)
+        {
+             // Add timestamp
+            string timestamp = DateTime.Now.ToString("HH:mm:ss");
+            string formattedMessage = $"[{timestamp}] ERROR: {message}";
+
+            _logHistory.Add(formattedMessage);
+
+            // Fire event
+            OnLogMessage?.Invoke(formattedMessage);
+
+            Debug.LogError(message);
+        }
     }
 }

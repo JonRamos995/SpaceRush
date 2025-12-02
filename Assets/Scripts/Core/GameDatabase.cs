@@ -17,6 +17,7 @@ namespace SpaceRush.Core
 
         public List<LocationDefinition> Locations { get; private set; }
         public List<TechDefinition> Technologies { get; private set; }
+        public List<RecipeDefinition> Recipes { get; private set; }
 
         private void Awake()
         {
@@ -41,42 +42,65 @@ namespace SpaceRush.Core
         {
             Locations = new List<LocationDefinition>();
             Technologies = new List<TechDefinition>();
+            Recipes = new List<RecipeDefinition>();
 
-            // --- Populate Technologies ---
-            Technologies.Add(new TechDefinition("EFFICIENCY_1", "Mining Efficiency I", "Improves mining speed by 10%", 500, 100));
-            Technologies.Add(new TechDefinition("MARKET_ANALYSIS", "Market Analysis AI", "Better trade prices", 1000, 250));
-            Technologies.Add(new TechDefinition("ADV_PROPULSION", "Advanced Propulsion", "Unlocks distant planets", 5000, 1000));
-            Technologies.Add(new TechDefinition("TERRAFORMING_BASICS", "Terraforming Basics", "Increases Civilization Level", 10000, 2500));
-            Technologies.Add(new TechDefinition("ENV_SUIT_MK2", "Environmental Suits Mk2", "Allows mining on Mars-like planets", 2000, 500));
-            Technologies.Add(new TechDefinition("MICRO_G_MINING", "Micro-G Anchors", "Allows mining in Asteroid Belts", 3000, 800));
-            Technologies.Add(new TechDefinition("THERMAL_SHIELDING", "Thermal Shielding", "Allows mining on Volcanic planets", 8000, 2000));
-            Technologies.Add(new TechDefinition("AUTO_LOGISTICS", "Automated Logistics", "Unlock automated trade routes", 5000, 1500));
+            LoadTechnologies();
+            LoadLocations();
+            LoadRecipes();
+        }
 
+        private void LoadRecipes()
+        {
+             TextAsset file = Resources.Load<TextAsset>("Data/recipes");
+            if (file != null)
+            {
+                RecipeDataWrapper wrapper = JsonUtility.FromJson<RecipeDataWrapper>(file.text);
+                if (wrapper != null && wrapper.Items != null)
+                {
+                    Recipes = wrapper.Items;
+                    GameLogger.Log($"Loaded {Recipes.Count} recipes from JSON.");
+                }
+            }
+            else
+            {
+                GameLogger.LogError("Could not load Data/recipes.json");
+            }
+        }
 
-            // --- Populate Locations ---
-            Locations.Add(new LocationDefinition(
-                "EARTH", "Earth", 0, BiomeType.Terrestrial,
-                new List<ResourceType>(),
-                null, 0
-            ));
+        private void LoadTechnologies()
+        {
+            TextAsset file = Resources.Load<TextAsset>("Data/technologies");
+            if (file != null)
+            {
+                TechDataWrapper wrapper = JsonUtility.FromJson<TechDataWrapper>(file.text);
+                if (wrapper != null && wrapper.Items != null)
+                {
+                    Technologies = wrapper.Items;
+                    GameLogger.Log($"Loaded {Technologies.Count} technologies from JSON.");
+                }
+            }
+            else
+            {
+                GameLogger.LogError("Could not load Data/technologies.json");
+            }
+        }
 
-            Locations.Add(new LocationDefinition(
-                "MOON", "The Moon", 100, BiomeType.Barren,
-                new List<ResourceType> { ResourceType.Iron },
-                null, 1
-            ));
-
-            Locations.Add(new LocationDefinition(
-                "MARS", "Mars", 500, BiomeType.Barren,
-                new List<ResourceType> { ResourceType.Iron, ResourceType.Gold },
-                "ENV_SUIT_MK2", 2
-            ));
-
-            Locations.Add(new LocationDefinition(
-                "ASTEROID_BELT", "Asteroid Belt", 2000, BiomeType.AsteroidField,
-                new List<ResourceType> { ResourceType.Iron, ResourceType.Gold, ResourceType.Platinum },
-                "MICRO_G_MINING", 3
-            ));
+        private void LoadLocations()
+        {
+            TextAsset file = Resources.Load<TextAsset>("Data/locations");
+            if (file != null)
+            {
+                LocationDataWrapper wrapper = JsonUtility.FromJson<LocationDataWrapper>(file.text);
+                if (wrapper != null && wrapper.Items != null)
+                {
+                    Locations = wrapper.Items;
+                    GameLogger.Log($"Loaded {Locations.Count} locations from JSON.");
+                }
+            }
+            else
+            {
+                GameLogger.LogError("Could not load Data/locations.json");
+            }
         }
 
         public LocationDefinition GetLocation(string id)
@@ -87,6 +111,11 @@ namespace SpaceRush.Core
         public TechDefinition GetTech(string id)
         {
             return Technologies.Find(t => t.ID == id);
+        }
+
+        public RecipeDefinition GetRecipe(string id)
+        {
+            return Recipes.Find(r => r.ID == id);
         }
     }
 }

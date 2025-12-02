@@ -1,0 +1,44 @@
+{
+  "Items": [
+    {
+      "ID": "EARTH",
+      "Name": "Earth",
+      "TravelCost": 0,
+      "Biome": 0,
+      "AvailableResources": [],
+      "RequiredTechID": null,
+      "MinShipLevel": 0,
+      "RequiresShipOperational": true
+    },
+    {
+      "ID": "MOON",
+      "Name": "The Moon",
+      "TravelCost": 100,
+      "Biome": 1,
+      "AvailableResources": [0],
+      "RequiredTechID": null,
+      "MinShipLevel": 1,
+      "RequiresShipOperational": true
+    },
+    {
+      "ID": "MARS",
+      "Name": "Mars",
+      "TravelCost": 500,
+      "Biome": 1,
+      "AvailableResources": [0, 1],
+      "RequiredTechID": "ENV_SUIT_MK2",
+      "MinShipLevel": 2,
+      "RequiresShipOperational": true
+    },
+    {
+      "ID": "ASTEROID_BELT",
+      "Name": "Asteroid Belt",
+      "TravelCost": 2000,
+      "Biome": 5,
+      "AvailableResources": [0, 1, 2],
+      "RequiredTechID": "MICRO_G_MINING",
+      "MinShipLevel": 3,
+      "RequiresShipOperational": true
+    }
+  ]
+}

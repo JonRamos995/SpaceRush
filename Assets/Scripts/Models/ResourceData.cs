@@ -9,7 +9,9 @@ namespace SpaceRush.Models
         Gold,
         Platinum,
         Diamond,
-        Antimatter
+        Antimatter,
+        Steel,
+        Circuit
     }
 
     [System.Serializable]
