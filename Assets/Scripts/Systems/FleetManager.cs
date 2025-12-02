@@ -48,9 +48,17 @@ namespace SpaceRush.Systems
                 return;
             }
 
-            ShipLevel++;
-            RecalculateStats();
-            GameLogger.Log($"Ship Upgraded to Level {ShipLevel}. Mining Speed: {MiningSpeed}, Capacity: {CargoCapacity}");
+            float cost = GetUpgradeCost();
+            if (ResourceManager.Instance.SpendCredits(cost))
+            {
+                ShipLevel++;
+                RecalculateStats();
+                GameLogger.Log($"Ship Upgraded to Level {ShipLevel}. Mining Speed: {MiningSpeed}, Capacity: {CargoCapacity}");
+            }
+            else
+            {
+                GameLogger.Log($"Not enough credits to upgrade ship. Cost: {cost}, Current: {ResourceManager.Instance.Credits}");
+            }
         }
 
         public void RepairShip(float progressAmount)

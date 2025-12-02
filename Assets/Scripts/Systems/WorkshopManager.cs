@@ -10,6 +10,8 @@ namespace SpaceRush.Systems
     {
         public static WorkshopManager Instance { get; private set; }
 
+        public const float AI_INSTALLATION_COST = 2000f;
+
         public List<WorkshopSlot> Slots { get; private set; } = new List<WorkshopSlot>();
         private int unlockedSlots = 1;
 
@@ -156,9 +158,17 @@ namespace SpaceRush.Systems
         public void InstallAI(int slotIndex)
         {
              if (slotIndex < 0 || slotIndex >= Slots.Count) return;
-             // Could cost credits/resources here
-             Slots[slotIndex].IsAutomated = true;
-             GameLogger.Log($"AI installed in Slot {slotIndex}. Automation Enabled.");
+
+             float cost = AI_INSTALLATION_COST;
+             if (ResourceManager.Instance.SpendCredits(cost))
+             {
+                 Slots[slotIndex].IsAutomated = true;
+                 GameLogger.Log($"AI installed in Slot {slotIndex}. Automation Enabled.");
+             }
+             else
+             {
+                 GameLogger.Log($"Not enough credits to install AI. Cost: {cost}");
+             }
         }
 
         private void RefreshUnlocks()
