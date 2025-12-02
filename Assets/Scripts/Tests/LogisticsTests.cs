@@ -22,7 +22,7 @@ namespace SpaceRush.Tests
         public void Teardown()
         {
             if (logisticsGo != null)
-                Object.DestroyImmediate(logisticsGo);
+                UnityEngine.Object.DestroyImmediate(logisticsGo);
         }
 
         [Test]

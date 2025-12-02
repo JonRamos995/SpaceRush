@@ -28,6 +28,11 @@ namespace SpaceRush.Systems
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         private void Start()
         {
             // Optional re-check if not initialized in Awake

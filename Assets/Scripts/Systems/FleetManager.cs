@@ -1,5 +1,6 @@
 using UnityEngine;
 using SpaceRush.Models;
+using SpaceRush.Core;
 
 namespace SpaceRush.Systems
 {
@@ -29,6 +30,11 @@ namespace SpaceRush.Systems
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         public float GetUpgradeCost()
         {
             return ShipLevel * 1000f;
@@ -38,13 +44,13 @@ namespace SpaceRush.Systems
         {
             if (!IsOperational)
             {
-                Debug.Log("Cannot upgrade. Ship is damaged.");
+                GameLogger.Log("Cannot upgrade. Ship is damaged.");
                 return;
             }
 
             ShipLevel++;
             RecalculateStats();
-            Debug.Log($"Ship Upgraded to Level {ShipLevel}. Mining Speed: {MiningSpeed}, Capacity: {CargoCapacity}");
+            GameLogger.Log($"Ship Upgraded to Level {ShipLevel}. Mining Speed: {MiningSpeed}, Capacity: {CargoCapacity}");
         }
 
         public void RepairShip(float progressAmount)
@@ -55,11 +61,11 @@ namespace SpaceRush.Systems
             if (RepairStatus >= 100f)
             {
                 RepairStatus = 100f;
-                Debug.Log("Ship Repairs Complete! Systems Online. Ready for launch.");
+                GameLogger.Log("Ship Repairs Complete! Systems Online. Ready for launch.");
             }
             else
             {
-                Debug.Log($"Repair Progress: {RepairStatus:F1}%");
+                GameLogger.Log($"Repair Progress: {RepairStatus:F1}%");
             }
         }
 

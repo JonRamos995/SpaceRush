@@ -32,6 +32,11 @@ namespace SpaceRush.Core
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         private void InitializeDatabase()
         {
             Locations = new List<LocationDefinition>();
