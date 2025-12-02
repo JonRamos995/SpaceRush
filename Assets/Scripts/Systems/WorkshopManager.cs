@@ -196,6 +196,11 @@ namespace SpaceRush.Systems
 
         // --- Persistence ---
 
+        public void ResetData()
+        {
+            InitializeWorkshop();
+        }
+
         public void LoadData(WorkshopSaveData data)
         {
             if (data == null) return;

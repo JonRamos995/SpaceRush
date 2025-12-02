@@ -82,6 +82,22 @@ namespace SpaceRush.Systems
             }
         }
 
+        public void ResetData()
+        {
+            Researchers = 0;
+            ResearchPoints = 0;
+            // CivilizationLevel is now managed by CivilizationManager, but we keep this for compatibility if needed
+            CivilizationLevel = 1.0f;
+
+            if (technologies != null)
+            {
+                foreach (var tech in technologies)
+                {
+                    tech.IsUnlocked = false;
+                }
+            }
+        }
+
         public void UnlockTechnology(string techID)
         {
             TechState tech = technologies.Find(t => t.ID == techID);
@@ -103,6 +119,7 @@ namespace SpaceRush.Systems
         public bool IsTechUnlocked(string techID)
         {
             if (string.IsNullOrEmpty(techID)) return true;
+            if (technologies == null) InitializeTechTree();
             TechState tech = technologies.Find(t => t.ID == techID);
             return tech != null && tech.IsUnlocked;
         }

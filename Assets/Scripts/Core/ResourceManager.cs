@@ -30,6 +30,11 @@ namespace SpaceRush.Core
             if (Instance == this) Instance = null;
         }
 
+        public void ResetData()
+        {
+            InitializeResources();
+        }
+
         private void InitializeResources()
         {
             resources = new Dictionary<ResourceType, ResourceData>();
@@ -43,6 +48,9 @@ namespace SpaceRush.Core
             AddResourceDefinition(new ResourceData(ResourceType.Steel, "Steel", 60f));
             AddResourceDefinition(new ResourceData(ResourceType.Circuit, "Circuit", 120f));
             AddResourceDefinition(new ResourceData(ResourceType.Hydrogen, "Hydrogen", 25f));
+            AddResourceDefinition(new ResourceData(ResourceType.Titanium, "Titanium", 80f));
+            AddResourceDefinition(new ResourceData(ResourceType.Helium3, "Helium-3", 200f));
+            AddResourceDefinition(new ResourceData(ResourceType.CryoFluid, "Cryo-Fluid", 120f));
 
             // New Resources
             AddResourceDefinition(new ResourceData(ResourceType.IronIngot, "Iron Ingot", 20f));

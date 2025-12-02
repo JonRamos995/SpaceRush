@@ -36,6 +36,11 @@ namespace SpaceRush.Systems
         // Configuration for Cargo Preferences (Percentage 0.0 to 1.0)
         public Dictionary<ResourceType, float> CargoAllocations = new Dictionary<ResourceType, float>();
 
+        public void ResetData()
+        {
+            CargoAllocations.Clear();
+        }
+
         public void SetAllocation(ResourceType type, float percentage)
         {
             if (CargoAllocations.ContainsKey(type))

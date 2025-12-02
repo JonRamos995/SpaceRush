@@ -21,6 +21,7 @@ namespace SpaceRush.Core
         public PlanetarySystem planetarySystem;
         public LogisticsSystem logisticsSystem;
         public WorkshopManager workshopManager;
+        public CivilizationManager civilizationManager;
         public PersistenceManager persistenceManager;
 
         private void Awake()
@@ -58,6 +59,7 @@ namespace SpaceRush.Core
             if (planetarySystem == null) planetarySystem = gameObject.AddComponent<PlanetarySystem>();
             if (logisticsSystem == null) logisticsSystem = gameObject.AddComponent<LogisticsSystem>();
             if (workshopManager == null) workshopManager = gameObject.AddComponent<WorkshopManager>();
+            if (civilizationManager == null) civilizationManager = gameObject.AddComponent<CivilizationManager>();
 
             // Add Persistence Manager
             if (persistenceManager == null) persistenceManager = gameObject.AddComponent<PersistenceManager>();

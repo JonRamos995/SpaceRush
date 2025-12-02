@@ -37,6 +37,12 @@ namespace SpaceRush.Core
         {
             GameSaveData data = new GameSaveData();
 
+            // Civilization Data
+            if (CivilizationManager.Instance != null)
+            {
+                data.Civilization = CivilizationManager.Instance.GetSaveData();
+            }
+
             // 1. Global / Resource Data
             data.Credits = ResourceManager.Instance.Credits;
             data.CurrentLocationID = LocationManager.Instance.CurrentLocation?.ID;
@@ -131,6 +137,28 @@ namespace SpaceRush.Core
             }
         }
 
+        public void ResetGameKeepCivilization()
+        {
+             // 1. Capture current Civ state
+            var civData = CivilizationManager.Instance.GetSaveData();
+
+            // 2. Reset Memory State
+            ResourceManager.Instance.ResetData();
+            FleetManager.Instance.ResetData();
+            ResearchManager.Instance.ResetData();
+            LocationManager.Instance.ResetData();
+            if (WorkshopManager.Instance != null) WorkshopManager.Instance.ResetData();
+            if (LogisticsSystem.Instance != null) LogisticsSystem.Instance.ResetData();
+
+            // 3. Restore Civ data
+            CivilizationManager.Instance.LoadData(civData);
+
+            // 4. Save the new state
+            SaveGame();
+
+            GameLogger.Log("Game Reset for Ascension!");
+        }
+
         public bool LoadGame()
         {
             if (!File.Exists(saveFilePath))
@@ -163,6 +191,12 @@ namespace SpaceRush.Core
 
         private void ApplyLoadData(GameSaveData data)
         {
+            // 0. Civilization
+            if (CivilizationManager.Instance != null)
+            {
+                CivilizationManager.Instance.LoadData(data.Civilization);
+            }
+
             // 1. Resources
             ResourceManager.Instance.SetCredits(data.Credits);
             foreach (var rData in data.Resources)

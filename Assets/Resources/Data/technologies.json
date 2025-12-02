@@ -62,6 +62,13 @@
       "Description": "Allows harvesting Hydrogen from Gas Giants",
       "Cost": 7500,
       "ResearchPointsRequired": 2000
+    },
+    {
+      "ID": "CRYO_STABILIZER",
+      "Name": "Cryo Stabilizers",
+      "Description": "Allows mining on Ice planets",
+      "Cost": 6000,
+      "ResearchPointsRequired": 1200
     }
   ]
 }
