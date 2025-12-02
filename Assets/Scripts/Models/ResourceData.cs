@@ -12,7 +12,15 @@ namespace SpaceRush.Models
         Antimatter,
         Steel,
         Circuit,
-        Hydrogen
+        Hydrogen,
+        // New Intermediate
+        IronIngot,
+        GoldIngot,
+        Plating,
+        // New Machines (Installable)
+        MiningDrill,
+        AutoMiner,
+        LogisticsBot
     }
 
     [System.Serializable]

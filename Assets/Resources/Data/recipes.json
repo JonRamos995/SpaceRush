@@ -19,6 +19,46 @@
       "OutputAmount": 1,
       "DurationSeconds": 10.0,
       "RequiredTechID": "MARKET_ANALYSIS"
+    },
+    {
+      "ID": "SMELT_IRON_INGOT",
+      "Name": "Smelt Iron Ingot",
+      "InputResource": 0,
+      "InputAmount": 2,
+      "OutputResource": 8,
+      "OutputAmount": 1,
+      "DurationSeconds": 2.0,
+      "RequiredTechID": null
+    },
+    {
+      "ID": "SMELT_GOLD_INGOT",
+      "Name": "Smelt Gold Ingot",
+      "InputResource": 1,
+      "InputAmount": 2,
+      "OutputResource": 9,
+      "OutputAmount": 1,
+      "DurationSeconds": 3.0,
+      "RequiredTechID": null
+    },
+    {
+      "ID": "CRAFT_DRILL",
+      "Name": "Assemble Mining Drill",
+      "InputResource": 8,
+      "InputAmount": 5,
+      "OutputResource": 11,
+      "OutputAmount": 1,
+      "DurationSeconds": 10.0,
+      "RequiredTechID": "EFFICIENCY_1"
+    },
+    {
+      "ID": "CRAFT_AUTOMINER",
+      "Name": "Assemble Auto-Miner",
+      "InputResource": 5,
+      "InputAmount": 10,
+      "OutputResource": 12,
+      "OutputAmount": 1,
+      "DurationSeconds": 30.0,
+      "RequiredTechID": "AUTO_LOGISTICS"
     }
   ]
 }
