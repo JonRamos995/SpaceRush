@@ -58,6 +58,12 @@ namespace SpaceRush.Core
                 RepairStatus = FleetManager.Instance.RepairStatus
             };
 
+            // Workshop Data
+            if (WorkshopManager.Instance != null)
+            {
+                data.Workshop = WorkshopManager.Instance.GetSaveData();
+            }
+
             // 3. Research Data
             data.Research = new ResearchSaveData
             {
@@ -83,12 +89,33 @@ namespace SpaceRush.Core
                     StationLevel = loc.Infrastructure.StationLevel
                 };
 
+                if (loc.Infrastructure.InstalledMachines != null)
+                {
+                    foreach (var kvp in loc.Infrastructure.InstalledMachines)
+                    {
+                        locData.InstalledMachines.Add(new ResourceSaveData { Type = kvp.Key, Quantity = kvp.Value });
+                    }
+                }
+
                 foreach (var kvp in loc.Stockpile)
                 {
                     locData.Stockpile.Add(new ResourceSaveData { Type = kvp.Key, Quantity = kvp.Value });
                 }
 
                 data.Locations.Add(locData);
+            }
+
+            // 5. Logistics Allocations
+            if (LogisticsSystem.Instance != null && LogisticsSystem.Instance.CargoAllocations != null)
+            {
+                foreach (var kvp in LogisticsSystem.Instance.CargoAllocations)
+                {
+                    data.LogisticsAllocations.Add(new LogisticsAllocationSaveData
+                    {
+                        Type = kvp.Key,
+                        Percentage = kvp.Value
+                    });
+                }
             }
 
             // Write to file
@@ -149,8 +176,28 @@ namespace SpaceRush.Core
             // 3. Fleet
             FleetManager.Instance.LoadData(data.Fleet);
 
+            // Workshop
+            if (WorkshopManager.Instance != null)
+            {
+                WorkshopManager.Instance.LoadData(data.Workshop);
+            }
+
             // 4. Locations
             LocationManager.Instance.LoadData(data.Locations);
+
+            // Restore Installed Machines (LoadData only does basic props)
+            foreach (var locData in data.Locations)
+            {
+                var loc = LocationManager.Instance.Locations.Find(l => l.ID == locData.ID);
+                if (loc != null && locData.InstalledMachines != null)
+                {
+                    loc.Infrastructure.InstalledMachines.Clear();
+                    foreach (var m in locData.InstalledMachines)
+                    {
+                        loc.Infrastructure.InstalledMachines[m.Type] = m.Quantity;
+                    }
+                }
+            }
 
             // Restore Current Location
             if (!string.IsNullOrEmpty(data.CurrentLocationID))
@@ -158,7 +205,21 @@ namespace SpaceRush.Core
                 LocationManager.Instance.SetLocation(data.CurrentLocationID);
             }
 
-            // 5. Idle
+            // 5. Logistics Allocations
+            if (LogisticsSystem.Instance != null)
+            {
+                // Clear existing
+                LogisticsSystem.Instance.CargoAllocations.Clear();
+                if (data.LogisticsAllocations != null)
+                {
+                    foreach (var alloc in data.LogisticsAllocations)
+                    {
+                        LogisticsSystem.Instance.SetAllocation(alloc.Type, alloc.Percentage);
+                    }
+                }
+            }
+
+            // 6. Idle
             IdleManager.Instance.CalculateOfflineProgressFromTimestamp(data.Timestamp);
         }
     }
