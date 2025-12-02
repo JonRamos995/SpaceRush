@@ -94,11 +94,11 @@ namespace SpaceRush.Systems
 
         private IEnumerator InvestigateRoutine(Location loc)
         {
-            Debug.Log($"Investigating {loc.Name}...");
+            GameLogger.Log($"Investigating {loc.Name}...");
             yield return new WaitForSeconds(INVESTIGATION_TIME);
 
             loc.State = DiscoveryState.Investigated;
-            Debug.Log($"Investigation Complete! {loc.Name} Biome: {loc.Biome}. Required Tech: {loc.RequiredTechID}");
+            GameLogger.Log($"Investigation Complete! {loc.Name} Biome: {loc.Biome}. Required Tech: {loc.RequiredTechID}");
         }
 
         public void StartMiningOperations(string locationID)
@@ -109,7 +109,7 @@ namespace SpaceRush.Systems
             // Check Tech Requirements
             if (!ResearchManager.Instance.IsTechUnlocked(loc.RequiredTechID))
             {
-                Debug.Log($"Cannot start mining: Missing Tech {loc.RequiredTechID}");
+                GameLogger.Log($"Cannot start mining: Missing Tech {loc.RequiredTechID}");
                 return;
             }
 
@@ -121,7 +121,7 @@ namespace SpaceRush.Systems
                 loc.Infrastructure.MiningLevel = 1;
                 loc.Infrastructure.StationLevel = 1;
                 loc.Infrastructure.LogisticsLevel = 1;
-                Debug.Log($"Mining Operations established on {loc.Name}");
+                GameLogger.Log($"Mining Operations established on {loc.Name}");
             }
         }
 
@@ -143,7 +143,7 @@ namespace SpaceRush.Systems
                 else if (type == "Station") loc.Infrastructure.StationLevel++;
                 else if (type == "Logistics") loc.Infrastructure.LogisticsLevel++;
 
-                Debug.Log($"Upgraded {type} on {loc.Name}.");
+                GameLogger.Log($"Upgraded {type} on {loc.Name}.");
             }
         }
     }

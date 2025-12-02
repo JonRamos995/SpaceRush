@@ -150,7 +150,7 @@ namespace SpaceRush.Systems
             {
                 loc.State = DiscoveryState.Discovered;
                 loc.IsUnlocked = true;
-                Debug.Log($"Discovered new location: {loc.Name}");
+                GameLogger.Log($"Discovered new location: {loc.Name}");
             }
         }
 
@@ -165,14 +165,14 @@ namespace SpaceRush.Systems
                  // but kept here for backward compat with simple logic if needed
                  if (target.RequiresShipOperational && !FleetManager.Instance.IsOperational)
                  {
-                     Debug.Log("Cannot travel: Ship is damaged.");
+                     GameLogger.Log("Cannot travel: Ship is damaged.");
                      return;
                  }
                  target.IsUnlocked = true;
                  target.State = DiscoveryState.Discovered;
             }
 
-            Debug.Log($"Traveling to {target.Name}...");
+            GameLogger.Log($"Traveling to {target.Name}...");
             CurrentLocation = target;
         }
     }
