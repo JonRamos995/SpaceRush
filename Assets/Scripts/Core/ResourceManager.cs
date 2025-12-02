@@ -40,6 +40,9 @@ namespace SpaceRush.Core
             AddResourceDefinition(new ResourceData(ResourceType.Platinum, "Platinum", 150f));
             AddResourceDefinition(new ResourceData(ResourceType.Diamond, "Diamond", 500f));
             AddResourceDefinition(new ResourceData(ResourceType.Antimatter, "Antimatter", 2500f));
+            AddResourceDefinition(new ResourceData(ResourceType.Steel, "Steel", 60f));
+            AddResourceDefinition(new ResourceData(ResourceType.Circuit, "Circuit", 120f));
+            AddResourceDefinition(new ResourceData(ResourceType.Hydrogen, "Hydrogen", 25f));
 
             Credits = 0f;
         }

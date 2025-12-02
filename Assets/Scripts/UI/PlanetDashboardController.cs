@@ -20,8 +20,11 @@ namespace SpaceRush.UI
         public Button upgradeMiningButton;
         public Button upgradeStationButton;
         public Button upgradeLogisticsButton;
+        public Button configureLogisticsButton;
 
-        private Location _currentViewedLocation;
+        public LogisticsUIController logisticsUI;
+
+        private LocationState _currentViewedLocation;
 
         private void Update()
         {
@@ -88,6 +91,7 @@ namespace SpaceRush.UI
             if (upgradeMiningButton != null) upgradeMiningButton.onClick.AddListener(() => OnUpgradeClicked("Mining"));
             if (upgradeStationButton != null) upgradeStationButton.onClick.AddListener(() => OnUpgradeClicked("Station"));
             if (upgradeLogisticsButton != null) upgradeLogisticsButton.onClick.AddListener(() => OnUpgradeClicked("Logistics"));
+            if (configureLogisticsButton != null) configureLogisticsButton.onClick.AddListener(OnConfigureLogisticsClicked);
         }
 
         private void UpdateButtons()
@@ -111,6 +115,7 @@ namespace SpaceRush.UI
             if (upgradeMiningButton != null) upgradeMiningButton.gameObject.SetActive(hasInfra);
             if (upgradeStationButton != null) upgradeStationButton.gameObject.SetActive(hasInfra);
             if (upgradeLogisticsButton != null) upgradeLogisticsButton.gameObject.SetActive(hasInfra);
+            if (configureLogisticsButton != null) configureLogisticsButton.gameObject.SetActive(hasInfra && _currentViewedLocation.Infrastructure.LogisticsLevel > 0);
         }
 
         private void DisableAllButtons()
@@ -120,6 +125,7 @@ namespace SpaceRush.UI
             if (upgradeMiningButton != null) upgradeMiningButton.gameObject.SetActive(false);
             if (upgradeStationButton != null) upgradeStationButton.gameObject.SetActive(false);
             if (upgradeLogisticsButton != null) upgradeLogisticsButton.gameObject.SetActive(false);
+            if (configureLogisticsButton != null) configureLogisticsButton.gameObject.SetActive(false);
         }
 
         // --- Event Handlers ---
@@ -140,6 +146,12 @@ namespace SpaceRush.UI
         {
             if (_currentViewedLocation != null)
                 PlanetarySystem.Instance.UpgradeInfrastructure(_currentViewedLocation.ID, type);
+        }
+
+        private void OnConfigureLogisticsClicked()
+        {
+            if (logisticsUI != null)
+                logisticsUI.Show();
         }
     }
 }

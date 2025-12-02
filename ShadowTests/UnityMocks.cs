@@ -144,6 +144,7 @@ namespace UnityEngine
         {
             return (float)rng.NextDouble() * (max - min) + min;
         }
+        public static float value => (float)rng.NextDouble();
     }
 
     public static class Mathf

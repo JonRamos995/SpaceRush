@@ -55,6 +55,13 @@
       "Description": "Unlock automated trade routes",
       "Cost": 5000,
       "ResearchPointsRequired": 1500
+    },
+    {
+      "ID": "GAS_SCOOPS",
+      "Name": "Gas Mining Scoops",
+      "Description": "Allows harvesting Hydrogen from Gas Giants",
+      "Cost": 7500,
+      "ResearchPointsRequired": 2000
     }
   ]
 }
