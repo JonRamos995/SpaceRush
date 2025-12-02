@@ -19,6 +19,7 @@ namespace SpaceRush.Core
         public ResearchManager researchManager;
         public PlanetarySystem planetarySystem;
         public LogisticsSystem logisticsSystem;
+        public PersistenceManager persistenceManager;
 
         private void Awake()
         {
@@ -47,7 +48,40 @@ namespace SpaceRush.Core
             if (planetarySystem == null) planetarySystem = gameObject.AddComponent<PlanetarySystem>();
             if (logisticsSystem == null) logisticsSystem = gameObject.AddComponent<LogisticsSystem>();
 
+            // Add Persistence Manager
+            if (persistenceManager == null) persistenceManager = gameObject.AddComponent<PersistenceManager>();
+
+            // Load Game Data
+            if (persistenceManager.LoadGame())
+            {
+                GameLogger.Log("Save data loaded.");
+            }
+            else
+            {
+                GameLogger.Log("Starting new session.");
+            }
+
             StartCoroutine(GameLoop());
+            StartCoroutine(AutoSaveLoop());
+        }
+
+        private void OnApplicationQuit()
+        {
+            if (persistenceManager != null) persistenceManager.SaveGame();
+        }
+
+        private void OnApplicationPause(bool pause)
+        {
+            if (pause && persistenceManager != null) persistenceManager.SaveGame();
+        }
+
+        private IEnumerator AutoSaveLoop()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(30f);
+                if (persistenceManager != null) persistenceManager.SaveGame();
+            }
         }
 
         private IEnumerator GameLoop()

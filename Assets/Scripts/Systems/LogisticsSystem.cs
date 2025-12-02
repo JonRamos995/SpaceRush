@@ -72,7 +72,8 @@ namespace SpaceRush.Systems
                 {
                     foreach (var loc in LocationManager.Instance.Locations)
                     {
-                        if (loc.State == DiscoveryState.ReadyToMine && loc.Infrastructure.LogisticsLevel > 1)
+                        // Requirement lowered to >= 1 so basic infrastructure works with the tech
+                        if (loc.State == DiscoveryState.ReadyToMine && loc.Infrastructure.LogisticsLevel >= 1)
                         {
                             // If Logistics Level is high enough, automatic shuttles bring resources back
                             // Amount depends on LogisticsLevel

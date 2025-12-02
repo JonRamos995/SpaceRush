@@ -5,52 +5,52 @@ namespace SpaceRush.Systems
 {
     public class IdleManager : MonoBehaviour
     {
-        private const string LAST_LOGIN_KEY = "LastLoginTime";
+        // Removed PlayerPrefs logic in favor of centralized SaveData
 
-        private void Start()
+        public void CalculateOfflineProgressFromTimestamp(long timestamp)
         {
-            CalculateOfflineProgress();
-        }
+            if (timestamp == 0) return; // New game
 
-        private void OnApplicationQuit()
-        {
-            SaveExitTime();
-        }
+            DateTime lastLogin = DateTime.FromBinary(timestamp);
+            TimeSpan timeAway = DateTime.UtcNow - lastLogin;
+            double secondsAway = timeAway.TotalSeconds;
 
-        private void OnApplicationPause(bool pause)
-        {
-            if (pause)
+            Debug.Log($"Player was away for {secondsAway} seconds.");
+
+            if (secondsAway > 10)
             {
-                SaveExitTime();
-            }
-            else
-            {
-                CalculateOfflineProgress();
-            }
-        }
+                // Offline Logic:
+                // 1. Calculate potential yield based on Fleet Mining Speed
+                float fleetMiningPower = FleetManager.Instance.MiningSpeed; // Per second (approx)
+                float totalMiningPower = fleetMiningPower * (float)secondsAway * 0.5f; // 50% efficiency for offline
 
-        private void SaveExitTime()
-        {
-            PlayerPrefs.SetString(LAST_LOGIN_KEY, DateTime.UtcNow.ToBinary().ToString());
-            PlayerPrefs.Save();
-        }
+                // 2. Determine where to mine
+                // Since we don't strictly save "Ship Location" in a dedicated field yet (it's part of LocationManager state but not explicitly "Ship is Here"),
+                // we will use the CurrentLocation from LocationManager, which was just loaded.
 
-        private void CalculateOfflineProgress()
-        {
-            if (PlayerPrefs.HasKey(LAST_LOGIN_KEY))
-            {
-                long temp = Convert.ToInt64(PlayerPrefs.GetString(LAST_LOGIN_KEY));
-                DateTime lastLogin = DateTime.FromBinary(temp);
-                TimeSpan timeAway = DateTime.UtcNow - lastLogin;
+                Location currentLoc = LocationManager.Instance.CurrentLocation;
 
-                double secondsAway = timeAway.TotalSeconds;
-                Debug.Log($"Player was away for {secondsAway} seconds.");
-
-                // Here we would trigger offline resource gain logic
-                // For now, just a placeholder
-                if (secondsAway > 60)
+                if (currentLoc != null && currentLoc.State >= DiscoveryState.ReadyToMine && currentLoc.AvailableResources.Count > 0)
                 {
-                   Debug.Log("Apply offline gains here based on Fleet Stats.");
+                    // Distribute mining power among available resources
+                    int resourceCount = currentLoc.AvailableResources.Count;
+                    int amountPerResource = Mathf.FloorToInt(totalMiningPower / resourceCount);
+
+                    if (amountPerResource > 0)
+                    {
+                        foreach (var resType in currentLoc.AvailableResources)
+                        {
+                            ResourceManager.Instance.AddResource(resType, amountPerResource);
+                        }
+                        GameLogger.Log($"Offline Progress: Mined {amountPerResource} of each local resource while away ({secondsAway:F0}s).");
+                    }
+                }
+                else
+                {
+                     // Fallback: Give some credits representing "Odd jobs" or trading while offline
+                     float creditGain = (float)secondsAway * 1.0f; // 1 credit per second
+                     ResourceManager.Instance.AddCredits(creditGain);
+                     GameLogger.Log($"Offline Progress: Earned {creditGain:F0} credits from automated trading while away.");
                 }
             }
         }

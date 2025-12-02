@@ -47,6 +47,11 @@ namespace SpaceRush.Core
             }
         }
 
+        public void SetCredits(float amount)
+        {
+            Credits = amount;
+        }
+
         public void AddCredits(float amount)
         {
             Credits += amount;
@@ -62,6 +67,14 @@ namespace SpaceRush.Core
                 return true;
             }
             return false;
+        }
+
+        public void SetResource(ResourceType type, int quantity)
+        {
+             if (resources.ContainsKey(type))
+            {
+                resources[type].Quantity = quantity;
+            }
         }
 
         public void AddResource(ResourceType type, int amount)
