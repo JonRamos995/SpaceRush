@@ -13,6 +13,7 @@ namespace SpaceRush.UI
         public LogWindowController logWindowController;
         public ResearchUIController researchUIController;
         public ShipUIController shipUIController;
+        public WorkshopUIController workshopUIController;
 
         private void Awake()
         {

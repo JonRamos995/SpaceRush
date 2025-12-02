@@ -49,11 +49,16 @@ namespace SpaceRush.Tests
         }
 
         [Test]
-        public void Test_UpgradeShip()
+        public void Test_UpgradeShip_Success()
         {
             // Repair ship first (required for upgrade)
             FleetManager.Instance.RepairShip(100f);
             Assert.IsTrue(FleetManager.Instance.IsOperational);
+
+            // Grant credits
+            float initialCredits = 2000f;
+            ResourceManager.Instance.SetCredits(initialCredits);
+            float upgradeCost = FleetManager.Instance.GetUpgradeCost();
 
             // Upgrade
             FleetManager.Instance.UpgradeShip();
@@ -62,6 +67,27 @@ namespace SpaceRush.Tests
             Assert.AreEqual(20, FleetManager.Instance.CargoCapacity);
             // Speed: 1.0 * 1.2^(2-1) = 1.2
             Assert.AreEqual(1.2f, FleetManager.Instance.MiningSpeed, 0.001f);
+
+            // Verify cost deduction
+            Assert.AreEqual(initialCredits - upgradeCost, ResourceManager.Instance.Credits);
+        }
+
+        [Test]
+        public void Test_UpgradeShip_InsufficientFunds()
+        {
+            // Repair ship first
+            FleetManager.Instance.RepairShip(100f);
+
+            // Set insufficient credits
+            ResourceManager.Instance.SetCredits(0f);
+
+            // Attempt Upgrade
+            FleetManager.Instance.UpgradeShip();
+
+            // Verify NO change
+            Assert.AreEqual(1, FleetManager.Instance.ShipLevel);
+            Assert.AreEqual(10, FleetManager.Instance.CargoCapacity);
+            Assert.AreEqual(0f, ResourceManager.Instance.Credits);
         }
 
         [Test]
