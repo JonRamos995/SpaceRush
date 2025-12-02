@@ -17,6 +17,9 @@ namespace SpaceRush.Models
         public PlanetaryInfrastructure Infrastructure = new PlanetaryInfrastructure();
         public Dictionary<ResourceType, int> Stockpile = new Dictionary<ResourceType, int>();
 
+        // Processing Configuration
+        public string ActiveRecipeID;
+
         // Reference to static data (not serialized, loaded at runtime)
         [System.NonSerialized]
         public LocationDefinition Definition;

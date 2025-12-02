@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.IO;
 
 namespace UnityEngine
 {
@@ -112,13 +113,8 @@ namespace UnityEngine
     {
         public Coroutine StartCoroutine(System.Collections.IEnumerator routine)
         {
-            // For testing, we might want to just execute it until the end or first yield.
-            // Executing until first yield is safer to prevent infinite loops.
-            // But some logic might depend on it running.
-            // For now, let's just iterate it once to trigger logic.
             if (routine.MoveNext())
             {
-                // Routine started
             }
             return new Coroutine();
         }
@@ -133,7 +129,7 @@ namespace UnityEngine
 
     public static class Time
     {
-        public static float deltaTime = 0.1f; // Simulated tick
+        public static float deltaTime = 0.1f;
         public static float time = 0f;
     }
 
@@ -207,5 +203,60 @@ namespace UnityEngine
     {
         public string fileName;
         public string menuName;
+    }
+
+    public class TextAsset : Object
+    {
+        public string text;
+        public TextAsset(string content)
+        {
+            this.text = content;
+        }
+    }
+
+    public static class Resources
+    {
+        public static T Load<T>(string path) where T : Object
+        {
+            if (typeof(T) == typeof(TextAsset))
+            {
+                string root = FindAssetsRoot();
+                if (root == null)
+                {
+                    Debug.LogError("Resources.Load: Could not find 'Assets' directory in parents.");
+                    return null;
+                }
+
+                string filePath = Path.Combine(root, "Assets", "Resources", path + ".json");
+
+                if (File.Exists(filePath))
+                {
+                    string content = File.ReadAllText(filePath);
+                    return new TextAsset(content) as T;
+                }
+                else
+                {
+                    Debug.LogError($"Resources.Load: File not found at {filePath}. Root: {root}");
+                }
+            }
+            return null;
+        }
+
+        private static string FindAssetsRoot()
+        {
+            string current = Directory.GetCurrentDirectory();
+            // Safety check: Prevent infinite loop if file system root is reached
+            for (int i = 0; i < 10; i++)
+            {
+                if (Directory.Exists(Path.Combine(current, "Assets")))
+                {
+                    return current;
+                }
+                DirectoryInfo parent = Directory.GetParent(current);
+                if (parent == null) break;
+                current = parent.FullName;
+            }
+            return null;
+        }
     }
 }

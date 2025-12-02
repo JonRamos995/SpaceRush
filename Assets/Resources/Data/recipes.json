@@ -1,0 +1,24 @@
+{
+  "Items": [
+    {
+      "ID": "SMELT_STEEL",
+      "Name": "Steel Smelting",
+      "InputResource": 0,
+      "InputAmount": 5,
+      "OutputResource": 5,
+      "OutputAmount": 1,
+      "DurationSeconds": 5.0,
+      "RequiredTechID": "EFFICIENCY_1"
+    },
+    {
+      "ID": "ASSEMBLE_CIRCUIT",
+      "Name": "Circuit Assembly",
+      "InputResource": 1,
+      "InputAmount": 2,
+      "OutputResource": 6,
+      "OutputAmount": 1,
+      "DurationSeconds": 10.0,
+      "RequiredTechID": "MARKET_ANALYSIS"
+    }
+  ]
+}
