@@ -139,12 +139,8 @@ namespace ShadowTests
             // Repair Ship First (Required for upgrade)
             FleetManager.Instance.RepairShip(100f);
 
-            // Give credits for upgrade (if needed? UpgradeShip checks cost? No, implementation shown earlier didn't check cost, just "IsOperational")
-            // Wait, FleetManager.UpgradeShip source: "if (!IsOperational)... ShipLevel++;"
-            // It does NOT check credits in the simple version I read?
-            // "GetUpgradeCost" exists but UpgradeShip doesn't seem to call SpendCredits in the snippet I saw?
-            // Let's verify FleetManager.UpgradeShip again.
-            // But assume Repair is enough.
+            // Provide enough credits
+            ResourceManager.Instance.SetCredits(FleetManager.Instance.GetUpgradeCost() + 100);
 
             // Upgrade Ship
             FleetManager.Instance.UpgradeShip(); // Level 2
