@@ -2,6 +2,7 @@ using UnityEngine;
 using SpaceRush.Core;
 using SpaceRush.Models;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace SpaceRush.Systems
 {
@@ -10,7 +11,9 @@ namespace SpaceRush.Systems
         public static TradingSystem Instance { get; private set; }
 
         private float marketUpdateInterval = 30f; // Update market prices every 30 seconds
-        private float autoSellInterval = 5f;
+
+        // Market Trends
+        private Dictionary<ResourceType, float> priceMultipliers = new Dictionary<ResourceType, float>();
 
         private void Awake()
         {
@@ -28,7 +31,6 @@ namespace SpaceRush.Systems
         private void Start()
         {
             StartCoroutine(UpdateMarketPrices());
-            StartCoroutine(AutoSellLoop());
         }
 
         private IEnumerator UpdateMarketPrices()
@@ -37,41 +39,77 @@ namespace SpaceRush.Systems
             {
                 foreach (var resource in ResourceManager.Instance.GetAllResources())
                 {
-                    // Fluctuate price by +/- 10%
-                    float fluctuation = Random.Range(0.9f, 1.1f);
-                    resource.CurrentMarketValue = resource.BaseValue * fluctuation;
-                    Debug.Log($"Market Update: {resource.Name} is now worth {resource.CurrentMarketValue:F2}");
+                    // 1. Random fluctuation +/- 5%
+                    float fluctuation = Random.Range(0.95f, 1.05f);
+
+                    // 2. Trend Logic (Simple random walk for now)
+                    if (!priceMultipliers.ContainsKey(resource.Type)) priceMultipliers[resource.Type] = 1.0f;
+
+                    // Slightly drift the trend
+                    priceMultipliers[resource.Type] *= Random.Range(0.98f, 1.02f);
+                    priceMultipliers[resource.Type] = Mathf.Clamp(priceMultipliers[resource.Type], 0.5f, 2.0f); // Cap between 50% and 200%
+
+                    resource.CurrentMarketValue = resource.BaseValue * fluctuation * priceMultipliers[resource.Type];
+
+                    // Ensure it doesn't go negative or too low
+                    if (resource.CurrentMarketValue < 1) resource.CurrentMarketValue = 1;
+
+                    // Debug.Log($"Market Update: {resource.Name} is now worth {resource.CurrentMarketValue:F2} (Trend: {priceMultipliers[resource.Type]:F2})");
                 }
                 yield return new WaitForSeconds(marketUpdateInterval);
             }
         }
 
-        private IEnumerator AutoSellLoop()
+        public float GetSellPrice(ResourceType type)
         {
-            while (true)
+            var res = ResourceManager.Instance.GetResource(type);
+            if (res == null) return 0;
+            return res.CurrentMarketValue;
+        }
+
+        public float GetBuyPrice(ResourceType type)
+        {
+            // Buy price is slightly higher than sell price (Spread)
+            return GetSellPrice(type) * 1.1f;
+        }
+
+        public void SellResource(ResourceType type, int amount)
+        {
+            var res = ResourceManager.Instance.GetResource(type);
+            if (res == null || amount <= 0) return;
+
+            if (res.Quantity >= amount)
             {
-                SellAllResources();
-                yield return new WaitForSeconds(autoSellInterval);
+                float unitPrice = GetSellPrice(type);
+                float totalValue = amount * unitPrice;
+
+                ResourceManager.Instance.RemoveResource(type, amount);
+                ResourceManager.Instance.AddCredits(totalValue);
+
+                GameLogger.Log($"Sold {amount} {res.Name} for {totalValue:F1} CR.");
+            }
+            else
+            {
+                GameLogger.Log("Not enough resources to sell.");
             }
         }
 
-        public void SellAllResources()
+        public void BuyResource(ResourceType type, int amount)
         {
-            float totalEarnings = 0f;
-            foreach (var resource in ResourceManager.Instance.GetAllResources())
-            {
-                if (resource.Quantity > 0)
-                {
-                    float value = resource.Quantity * resource.CurrentMarketValue;
-                    totalEarnings += value;
-                    ResourceManager.Instance.RemoveResource(resource.Type, resource.Quantity);
-                }
-            }
+            var res = ResourceManager.Instance.GetResource(type);
+            if (res == null || amount <= 0) return;
 
-            if (totalEarnings > 0)
+            float unitPrice = GetBuyPrice(type);
+            float totalCost = amount * unitPrice;
+
+            if (ResourceManager.Instance.SpendCredits(totalCost))
             {
-                ResourceManager.Instance.AddCredits(totalEarnings);
-                Debug.Log($"Sold all resources for {totalEarnings:F2} credits.");
+                ResourceManager.Instance.AddResource(type, amount);
+                GameLogger.Log($"Bought {amount} {res.Name} for {totalCost:F1} CR.");
+            }
+            else
+            {
+                GameLogger.Log("Not enough credits.");
             }
         }
     }
