@@ -57,8 +57,22 @@ namespace SpaceRush.Systems
 
         public void ProduceResources(LocationState loc)
         {
-            // Production formula: MiningLevel * BiomeMultiplier (1.0 for now)
+            // Production formula: MiningLevel + Installed Drills
             int productionAmount = loc.Infrastructure.MiningLevel;
+
+            // Apply Machine Bonuses
+            if (loc.Infrastructure.InstalledMachines.ContainsKey(ResourceType.MiningDrill))
+            {
+                productionAmount += loc.Infrastructure.InstalledMachines[ResourceType.MiningDrill]; // +1 per Drill
+            }
+
+            float multiplier = 1.0f;
+            if (loc.Infrastructure.InstalledMachines.ContainsKey(ResourceType.AutoMiner))
+            {
+                multiplier += loc.Infrastructure.InstalledMachines[ResourceType.AutoMiner] * 0.1f; // +10% per AutoMiner
+            }
+
+            productionAmount = Mathf.FloorToInt(productionAmount * multiplier);
 
             // Check Station Capacity
             // Simple capacity logic: StationLevel * 100
