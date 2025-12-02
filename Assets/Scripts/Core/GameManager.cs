@@ -35,7 +35,7 @@ namespace SpaceRush.Core
 
         private void Start()
         {
-            Debug.Log("Space Rush: Idle Trading Empire - Game Started");
+            GameLogger.Log("Space Rush: Idle Trading Empire - Game Started");
 
             // Ensure Systems are initialized
             if (resourceManager == null) resourceManager = gameObject.AddComponent<ResourceManager>();
