@@ -11,7 +11,8 @@ namespace SpaceRush.Models
         Diamond,
         Antimatter,
         Steel,
-        Circuit
+        Circuit,
+        Hydrogen
     }
 
     [System.Serializable]
