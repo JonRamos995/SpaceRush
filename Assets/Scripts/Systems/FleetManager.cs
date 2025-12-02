@@ -1,4 +1,5 @@
 using UnityEngine;
+using SpaceRush.Models;
 
 namespace SpaceRush.Systems
 {
@@ -28,6 +29,11 @@ namespace SpaceRush.Systems
             }
         }
 
+        public float GetUpgradeCost()
+        {
+            return ShipLevel * 1000f;
+        }
+
         public void UpgradeShip()
         {
             if (!IsOperational)
@@ -37,8 +43,7 @@ namespace SpaceRush.Systems
             }
 
             ShipLevel++;
-            MiningSpeed *= 1.2f;
-            CargoCapacity += 10;
+            RecalculateStats();
             Debug.Log($"Ship Upgraded to Level {ShipLevel}. Mining Speed: {MiningSpeed}, Capacity: {CargoCapacity}");
         }
 
@@ -56,6 +61,31 @@ namespace SpaceRush.Systems
             {
                 Debug.Log($"Repair Progress: {RepairStatus:F1}%");
             }
+        }
+
+        public void LoadData(FleetSaveData data)
+        {
+            if (data == null) return;
+            ShipLevel = data.ShipLevel;
+            RepairStatus = data.RepairStatus;
+
+            RecalculateStats();
+        }
+
+        public void RecalculateStats()
+        {
+            // Base Stats
+            float baseSpeed = 1.0f * Mathf.Pow(1.2f, ShipLevel - 1);
+            int baseCapacity = 10 * ShipLevel;
+
+            // Apply Tech Bonuses
+            if (ResearchManager.Instance.IsTechUnlocked("EFFICIENCY_1"))
+            {
+                baseSpeed *= 1.1f; // +10%
+            }
+
+            MiningSpeed = baseSpeed;
+            CargoCapacity = baseCapacity;
         }
     }
 }

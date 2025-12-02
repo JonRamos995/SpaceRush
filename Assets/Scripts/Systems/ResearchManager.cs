@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SpaceRush.Core;
+using SpaceRush.Models;
+using System.Linq;
 
 namespace SpaceRush.Systems
 {
@@ -110,6 +112,39 @@ namespace SpaceRush.Systems
             return tech != null && tech.IsUnlocked;
         }
 
+        public List<string> GetUnlockedTechIDs()
+        {
+            return technologies.Where(t => t.IsUnlocked).Select(t => t.ID).ToList();
+        }
+
+        public List<Technology> GetAllTechnologies()
+        {
+            return technologies;
+        }
+
+        public void LoadData(ResearchSaveData data)
+        {
+            if (data == null) return;
+            Researchers = data.Researchers;
+            ResearchPoints = data.ResearchPoints;
+
+            // Reset derived stats before re-applying tech effects
+            CivilizationLevel = 1.0f;
+
+            if (data.UnlockedTechIDs != null)
+            {
+                foreach (var id in data.UnlockedTechIDs)
+                {
+                    Technology tech = technologies.Find(t => t.ID == id);
+                    if (tech != null)
+                    {
+                        tech.IsUnlocked = true;
+                        ApplyTechEffect(tech);
+                    }
+                }
+            }
+        }
+
         private void ApplyTechEffect(Technology tech)
         {
             switch (tech.ID)
@@ -117,6 +152,9 @@ namespace SpaceRush.Systems
                 case "TERRAFORMING_BASICS":
                     CivilizationLevel += 0.5f;
                     Debug.Log("Civilization Level Increased!");
+                    break;
+                case "EFFICIENCY_1":
+                    FleetManager.Instance.RecalculateStats();
                     break;
                 // Other effects would be hooked into other managers
             }

@@ -87,12 +87,13 @@ namespace SpaceRush.Systems
                 Name = "Earth",
                 TravelCost = 0,
                 IsUnlocked = true,
-                State = DiscoveryState.Investigated,
+                State = DiscoveryState.Investigated, // Or ReadyToMine if we want it active immediately
                 Biome = BiomeType.Terrestrial,
                 AvailableResources = new List<ResourceType>(),
                 RequiresShipOperational = false,
                 MinShipLevel = 0,
-                RequiredTechID = null
+                RequiredTechID = null,
+                Infrastructure = new PlanetaryInfrastructure { MiningLevel = 1, LogisticsLevel = 1, StationLevel = 1 }
             });
 
             // The Moon
@@ -159,21 +160,75 @@ namespace SpaceRush.Systems
             Location target = Locations.Find(l => l.ID == locationID);
             if (target == null) return;
 
-            if (!target.IsUnlocked)
+            // Check Ship Status
+            if (target.RequiresShipOperational && !FleetManager.Instance.IsOperational)
             {
-                 // Logic to unlock moved to "Discovery" phase usually,
-                 // but kept here for backward compat with simple logic if needed
-                 if (target.RequiresShipOperational && !FleetManager.Instance.IsOperational)
-                 {
-                     GameLogger.Log("Cannot travel: Ship is damaged.");
-                     return;
-                 }
-                 target.IsUnlocked = true;
-                 target.State = DiscoveryState.Discovered;
+                 GameLogger.Log("Cannot travel: Ship is damaged.");
+                 return;
             }
 
-            GameLogger.Log($"Traveling to {target.Name}...");
-            CurrentLocation = target;
+            // Check Tech Requirements (Propulsion or Biome suits)
+            if (!string.IsNullOrEmpty(target.RequiredTechID))
+            {
+                if (!ResearchManager.Instance.IsTechUnlocked(target.RequiredTechID))
+                {
+                    GameLogger.Log($"Cannot travel: Requires technology.");
+                    return;
+                }
+            }
+
+            // Travel Cost
+            if (ResourceManager.Instance.SpendCredits(target.TravelCost))
+            {
+                GameLogger.Log($"Traveling to {target.Name} (-{target.TravelCost} CR)...");
+                CurrentLocation = target;
+                if (!target.IsUnlocked) target.IsUnlocked = true;
+                if (target.State == DiscoveryState.Hidden) target.State = DiscoveryState.Discovered;
+            }
+            else
+            {
+                 GameLogger.Log($"Not enough credits to travel to {target.Name}. Need {target.TravelCost}.");
+            }
+        }
+
+        public void SetLocation(string id)
+        {
+            var loc = Locations.Find(l => l.ID == id);
+            if (loc != null)
+            {
+                CurrentLocation = loc;
+                GameLogger.Log($"Location restored: {loc.Name}");
+            }
+        }
+
+        public void LoadData(List<LocationSaveData> data)
+        {
+            if (data == null) return;
+
+            foreach (var locData in data)
+            {
+                var loc = Locations.Find(l => l.ID == locData.ID);
+                if (loc != null)
+                {
+                    loc.IsUnlocked = locData.IsUnlocked;
+                    loc.State = (DiscoveryState)locData.State;
+                    loc.Infrastructure.MiningLevel = locData.MiningLevel;
+                    loc.Infrastructure.LogisticsLevel = locData.LogisticsLevel;
+                    loc.Infrastructure.StationLevel = locData.StationLevel;
+
+                    loc.Stockpile.Clear();
+                    foreach (var res in locData.Stockpile)
+                    {
+                        loc.Stockpile[res.Type] = res.Quantity;
+                    }
+                }
+            }
+
+            // Re-set CurrentLocation if needed, or just default to Earth or find where ship is?
+            // For now, let's keep it at Earth (default) unless we want to save ship location too.
+            // I'll assume ship is at Earth or we can default to the first unlocked location if Earth is somehow locked (unlikely).
+            // Better yet, we should probably save "CurrentLocationID" in FleetSaveData or GlobalSaveData.
+            // But for now, Earth is safe.
         }
     }
 }
