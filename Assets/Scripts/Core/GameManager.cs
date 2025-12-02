@@ -11,6 +11,7 @@ namespace SpaceRush.Core
         public static GameManager Instance { get; private set; }
 
         [Header("System References")]
+        public GameDatabase gameDatabase; // Added Database
         public ResourceManager resourceManager;
         public FleetManager fleetManager;
         public TradingSystem tradingSystem;
@@ -37,6 +38,9 @@ namespace SpaceRush.Core
         private void Start()
         {
             GameLogger.Log("Space Rush: Idle Trading Empire - Game Started");
+
+            // Ensure Database is initialized FIRST
+            if (gameDatabase == null) gameDatabase = gameObject.AddComponent<GameDatabase>();
 
             // Ensure Systems are initialized
             if (resourceManager == null) resourceManager = gameObject.AddComponent<ResourceManager>();
@@ -123,7 +127,7 @@ namespace SpaceRush.Core
             // This replaces the old "Mining Phase" which was instant.
             // Now "Mining" happens in PlanetarySystem.cs, and the ship "Collects" here.
 
-            Location currentLoc = LocationManager.Instance.CurrentLocation;
+            LocationState currentLoc = LocationManager.Instance.CurrentLocation;
             if (currentLoc != null && currentLoc.State == DiscoveryState.ReadyToMine)
             {
                 LogisticsSystem.Instance.CollectLocalResources(currentLoc);

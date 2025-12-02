@@ -29,24 +29,13 @@ namespace SpaceRush.Systems
         }
 
         // Called when the Main Ship visits a planet
-        public void CollectLocalResources(Location loc)
+        public void CollectLocalResources(LocationState loc)
         {
             if (loc == null || loc.Stockpile.Count == 0) return;
 
-            // Move everything from Local Stockpile to Global ResourceManager
-            // In a more complex version, we would check CargoCapacity of the fleet
-            // For now, let's assume the ship fills up to capacity and leaves the rest
-
             int shipCapacity = FleetManager.Instance.CargoCapacity;
-            int currentShipLoad = 0; // We assume ship empties on "Sell" or "Return to Earth".
-                                     // But ResourceManager is global credits.
-                                     // For simplicity in this blueprint:
-                                     // "Collecting" moves resources to a virtual "Ship Hold" or directly to Global Inventory?
-                                     // The prompt says "sell them for a high price... automatically and idly".
-                                     // Let's assume collecting adds to Global Inventory (which TradingSystem then sells).
 
-            // To simulate capacity, we might limit how much we can take.
-            // But let's keep it fluid: Take all allowed by LogisticsLevel/FleetCapacity
+            // TODO: Implement capacity check
 
             List<ResourceType> keys = new List<ResourceType>(loc.Stockpile.Keys);
             foreach (var type in keys)
@@ -56,7 +45,7 @@ namespace SpaceRush.Systems
                 {
                     ResourceManager.Instance.AddResource(type, amount);
                     loc.Stockpile[type] = 0;
-                    Debug.Log($"Collected {amount} {type} from {loc.Name}");
+                    Debug.Log($"Collected {amount} {type} from {loc.Definition.Name}");
                 }
             }
         }
@@ -70,26 +59,25 @@ namespace SpaceRush.Systems
                 // Check for Automated Logistics Tech
                 if (ResearchManager.Instance.IsTechUnlocked("AUTO_LOGISTICS"))
                 {
-                    foreach (var loc in LocationManager.Instance.Locations)
+                    if (LocationManager.Instance != null && LocationManager.Instance.Locations != null)
                     {
-                        // Requirement lowered to >= 1 so basic infrastructure works with the tech
-                        if (loc.State == DiscoveryState.ReadyToMine && loc.Infrastructure.LogisticsLevel >= 1)
+                        foreach (var loc in LocationManager.Instance.Locations)
                         {
-                            // If Logistics Level is high enough, automatic shuttles bring resources back
-                            // Amount depends on LogisticsLevel
-                            int transferRate = loc.Infrastructure.LogisticsLevel * 5;
-
-                            List<ResourceType> keys = new List<ResourceType>(loc.Stockpile.Keys);
-                            foreach (var type in keys)
+                            if (loc.State == DiscoveryState.ReadyToMine && loc.Infrastructure.LogisticsLevel >= 1)
                             {
-                                int available = loc.Stockpile[type];
-                                int toTransfer = Mathf.Min(available, transferRate);
+                                int transferRate = loc.Infrastructure.LogisticsLevel * 5;
 
-                                if (toTransfer > 0)
+                                List<ResourceType> keys = new List<ResourceType>(loc.Stockpile.Keys);
+                                foreach (var type in keys)
                                 {
-                                    loc.Stockpile[type] -= toTransfer;
-                                    ResourceManager.Instance.AddResource(type, toTransfer);
-                                    // Debug.Log($"Auto-Logistics: Transferred {toTransfer} {type} from {loc.Name}");
+                                    int available = loc.Stockpile[type];
+                                    int toTransfer = Mathf.Min(available, transferRate);
+
+                                    if (toTransfer > 0)
+                                    {
+                                        loc.Stockpile[type] -= toTransfer;
+                                        ResourceManager.Instance.AddResource(type, toTransfer);
+                                    }
                                 }
                             }
                         }

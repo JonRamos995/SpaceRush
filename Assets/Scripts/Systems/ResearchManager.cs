@@ -2,32 +2,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using SpaceRush.Core;
 using SpaceRush.Models;
+using SpaceRush.Data;
 using System.Linq;
 
 namespace SpaceRush.Systems
 {
-    [System.Serializable]
-    public class Technology
-    {
-        public string ID;
-        public string Name;
-        public string Description;
-        public float Cost;
-        public bool IsUnlocked;
-        public int ResearchPointsRequired;
-    }
-
     public class ResearchManager : MonoBehaviour
     {
         public static ResearchManager Instance { get; private set; }
 
         public int Researchers { get; private set; } = 0;
         public float ResearchPoints { get; private set; } = 0f;
-        public float CivilizationLevel { get; private set; } = 1.0f; // Multiplier for global benefits
+        public float CivilizationLevel { get; private set; } = 1.0f;
 
-        private List<Technology> technologies;
+        private List<TechState> technologies;
         private float researchSpeedPerResearcher = 1.0f;
-        private float researcherCost = 1000f; // Cost to hire one
+        private float researcherCost = 1000f;
 
         private void Awake()
         {
@@ -35,7 +25,6 @@ namespace SpaceRush.Systems
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                InitializeTechTree();
             }
             else
             {
@@ -43,29 +32,25 @@ namespace SpaceRush.Systems
             }
         }
 
+        private void Start()
+        {
+            InitializeTechTree();
+        }
+
         private void InitializeTechTree()
         {
-            technologies = new List<Technology>
+            technologies = new List<TechState>();
+
+            if (GameDatabase.Instance == null) return;
+
+            foreach (var def in GameDatabase.Instance.Technologies)
             {
-                // Basic Upgrades
-                new Technology { ID = "EFFICIENCY_1", Name = "Mining Efficiency I", Description = "Improves mining speed by 10%", Cost = 500, ResearchPointsRequired = 100, IsUnlocked = false },
-                new Technology { ID = "MARKET_ANALYSIS", Name = "Market Analysis AI", Description = "Better trade prices", Cost = 1000, ResearchPointsRequired = 250, IsUnlocked = false },
-                new Technology { ID = "ADV_PROPULSION", Name = "Advanced Propulsion", Description = "Unlocks distant planets", Cost = 5000, ResearchPointsRequired = 1000, IsUnlocked = false },
-                new Technology { ID = "TERRAFORMING_BASICS", Name = "Terraforming Basics", Description = "Increases Civilization Level", Cost = 10000, ResearchPointsRequired = 2500, IsUnlocked = false },
-
-                // Planetary Mining Techs
-                new Technology { ID = "ENV_SUIT_MK2", Name = "Environmental Suits Mk2", Description = "Allows mining on Mars-like planets", Cost = 2000, ResearchPointsRequired = 500, IsUnlocked = false },
-                new Technology { ID = "MICRO_G_MINING", Name = "Micro-G Anchors", Description = "Allows mining in Asteroid Belts", Cost = 3000, ResearchPointsRequired = 800, IsUnlocked = false },
-                new Technology { ID = "THERMAL_SHIELDING", Name = "Thermal Shielding", Description = "Allows mining on Volcanic planets", Cost = 8000, ResearchPointsRequired = 2000, IsUnlocked = false },
-
-                // Infrastructure Techs
-                new Technology { ID = "AUTO_LOGISTICS", Name = "Automated Logistics", Description = "Unlock automated trade routes", Cost = 5000, ResearchPointsRequired = 1500, IsUnlocked = false }
-            };
+                technologies.Add(new TechState(def));
+            }
         }
 
         private void Update()
         {
-            // Passive research generation
             if (Researchers > 0)
             {
                 float gained = Researchers * researchSpeedPerResearcher * Time.deltaTime;
@@ -86,8 +71,7 @@ namespace SpaceRush.Systems
         {
             if (ResourceManager.Instance.SpendCredits(creditAmount))
             {
-                // Converting money directly to speed up current projects or buy raw points
-                float pointsGained = creditAmount * 0.1f; // 10 Credits = 1 RP
+                float pointsGained = creditAmount * 0.1f;
                 ResearchPoints += pointsGained;
                 Debug.Log($"Invested {creditAmount} credits for {pointsGained} RP.");
             }
@@ -95,20 +79,26 @@ namespace SpaceRush.Systems
 
         public void UnlockTechnology(string techID)
         {
-            Technology tech = technologies.Find(t => t.ID == techID);
-            if (tech != null && !tech.IsUnlocked && ResearchPoints >= tech.ResearchPointsRequired)
+            TechState tech = technologies.Find(t => t.ID == techID);
+            if (tech != null && !tech.IsUnlocked)
             {
-                ResearchPoints -= tech.ResearchPointsRequired;
-                tech.IsUnlocked = true;
-                ApplyTechEffect(tech);
-                Debug.Log($"Unlocked {tech.Name}!");
+                 // Ensure Definition is linked (if serialization broke it, though in memory it should be fine)
+                 if (tech.Definition == null) tech.Definition = GameDatabase.Instance.GetTech(techID);
+
+                 if (ResearchPoints >= tech.Definition.ResearchPointsRequired)
+                 {
+                    ResearchPoints -= tech.Definition.ResearchPointsRequired;
+                    tech.IsUnlocked = true;
+                    ApplyTechEffect(tech);
+                    Debug.Log($"Unlocked {tech.Definition.Name}!");
+                 }
             }
         }
 
         public bool IsTechUnlocked(string techID)
         {
-            if (string.IsNullOrEmpty(techID)) return true; // No requirement
-            Technology tech = technologies.Find(t => t.ID == techID);
+            if (string.IsNullOrEmpty(techID)) return true;
+            TechState tech = technologies.Find(t => t.ID == techID);
             return tech != null && tech.IsUnlocked;
         }
 
@@ -117,7 +107,7 @@ namespace SpaceRush.Systems
             return technologies.Where(t => t.IsUnlocked).Select(t => t.ID).ToList();
         }
 
-        public List<Technology> GetAllTechnologies()
+        public List<TechState> GetAllTechnologies()
         {
             return technologies;
         }
@@ -127,25 +117,27 @@ namespace SpaceRush.Systems
             if (data == null) return;
             Researchers = data.Researchers;
             ResearchPoints = data.ResearchPoints;
-
-            // Reset derived stats before re-applying tech effects
             CivilizationLevel = 1.0f;
+
+            // Ensure initialized
+            if (technologies == null || technologies.Count == 0) InitializeTechTree();
 
             if (data.UnlockedTechIDs != null)
             {
                 foreach (var id in data.UnlockedTechIDs)
                 {
-                    Technology tech = technologies.Find(t => t.ID == id);
+                    TechState tech = technologies.Find(t => t.ID == id);
                     if (tech != null)
                     {
                         tech.IsUnlocked = true;
+                        if (tech.Definition == null) tech.Definition = GameDatabase.Instance.GetTech(id);
                         ApplyTechEffect(tech);
                     }
                 }
             }
         }
 
-        private void ApplyTechEffect(Technology tech)
+        private void ApplyTechEffect(TechState tech)
         {
             switch (tech.ID)
             {
@@ -156,7 +148,6 @@ namespace SpaceRush.Systems
                 case "EFFICIENCY_1":
                     FleetManager.Instance.RecalculateStats();
                     break;
-                // Other effects would be hooked into other managers
             }
         }
     }

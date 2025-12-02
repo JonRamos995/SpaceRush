@@ -2,6 +2,7 @@ using UnityEngine;
 using SpaceRush.Core;
 using SpaceRush.Models;
 using System.Collections;
+using SpaceRush.Data; // Needed for LocationDefinition properties access if used
 
 namespace SpaceRush.Systems
 {
@@ -36,17 +37,20 @@ namespace SpaceRush.Systems
             {
                 yield return new WaitForSeconds(1.0f); // Tick every second
 
-                foreach (var loc in LocationManager.Instance.Locations)
+                if (LocationManager.Instance != null && LocationManager.Instance.Locations != null)
                 {
-                    if (loc.State == DiscoveryState.ReadyToMine && loc.Infrastructure.MiningLevel > 0)
+                    foreach (var loc in LocationManager.Instance.Locations)
                     {
-                        ProduceResources(loc);
+                        if (loc.State == DiscoveryState.ReadyToMine && loc.Infrastructure.MiningLevel > 0)
+                        {
+                            ProduceResources(loc);
+                        }
                     }
                 }
             }
         }
 
-        private void ProduceResources(Location loc)
+        private void ProduceResources(LocationState loc)
         {
             // Production formula: MiningLevel * BiomeMultiplier (1.0 for now)
             int productionAmount = loc.Infrastructure.MiningLevel;
@@ -63,16 +67,15 @@ namespace SpaceRush.Systems
                 return;
             }
 
-            // Produce random available resource
-            if (loc.AvailableResources.Count > 0)
+            // Produce random available resource from Definition
+            if (loc.Definition.AvailableResources.Count > 0)
             {
-                var resType = loc.AvailableResources[Random.Range(0, loc.AvailableResources.Count)];
+                var resType = loc.Definition.AvailableResources[Random.Range(0, loc.Definition.AvailableResources.Count)];
 
                 if (!loc.Stockpile.ContainsKey(resType))
                     loc.Stockpile[resType] = 0;
 
                 loc.Stockpile[resType] += productionAmount;
-                // Debug.Log($"Planet {loc.Name} produced {productionAmount} {resType}. Stock: {loc.Stockpile[resType]}");
             }
         }
 
@@ -80,7 +83,7 @@ namespace SpaceRush.Systems
 
         public void InvestigatePlanet(string locationID)
         {
-            Location loc = LocationManager.Instance.Locations.Find(l => l.ID == locationID);
+            LocationState loc = LocationManager.Instance.Locations.Find(l => l.ID == locationID);
             if (loc == null) return;
 
             if (loc.State == DiscoveryState.Discovered)
@@ -92,24 +95,24 @@ namespace SpaceRush.Systems
             }
         }
 
-        private IEnumerator InvestigateRoutine(Location loc)
+        private IEnumerator InvestigateRoutine(LocationState loc)
         {
-            GameLogger.Log($"Investigating {loc.Name}...");
+            GameLogger.Log($"Investigating {loc.Definition.Name}...");
             yield return new WaitForSeconds(INVESTIGATION_TIME);
 
             loc.State = DiscoveryState.Investigated;
-            GameLogger.Log($"Investigation Complete! {loc.Name} Biome: {loc.Biome}. Required Tech: {loc.RequiredTechID}");
+            GameLogger.Log($"Investigation Complete! {loc.Definition.Name} Biome: {loc.Definition.Biome}. Required Tech: {loc.Definition.RequiredTechID}");
         }
 
         public void StartMiningOperations(string locationID)
         {
-            Location loc = LocationManager.Instance.Locations.Find(l => l.ID == locationID);
+            LocationState loc = LocationManager.Instance.Locations.Find(l => l.ID == locationID);
             if (loc == null || loc.State != DiscoveryState.Investigated) return;
 
             // Check Tech Requirements
-            if (!ResearchManager.Instance.IsTechUnlocked(loc.RequiredTechID))
+            if (!ResearchManager.Instance.IsTechUnlocked(loc.Definition.RequiredTechID))
             {
-                GameLogger.Log($"Cannot start mining: Missing Tech {loc.RequiredTechID}");
+                GameLogger.Log($"Cannot start mining: Missing Tech {loc.Definition.RequiredTechID}");
                 return;
             }
 
@@ -121,13 +124,13 @@ namespace SpaceRush.Systems
                 loc.Infrastructure.MiningLevel = 1;
                 loc.Infrastructure.StationLevel = 1;
                 loc.Infrastructure.LogisticsLevel = 1;
-                GameLogger.Log($"Mining Operations established on {loc.Name}");
+                GameLogger.Log($"Mining Operations established on {loc.Definition.Name}");
             }
         }
 
         public void UpgradeInfrastructure(string locationID, string type)
         {
-            Location loc = LocationManager.Instance.Locations.Find(l => l.ID == locationID);
+            LocationState loc = LocationManager.Instance.Locations.Find(l => l.ID == locationID);
             if (loc == null || loc.State != DiscoveryState.ReadyToMine) return;
 
             float cost = 0f;
@@ -143,7 +146,7 @@ namespace SpaceRush.Systems
                 else if (type == "Station") loc.Infrastructure.StationLevel++;
                 else if (type == "Logistics") loc.Infrastructure.LogisticsLevel++;
 
-                GameLogger.Log($"Upgraded {type} on {loc.Name}.");
+                GameLogger.Log($"Upgraded {type} on {loc.Definition.Name}.");
             }
         }
     }
