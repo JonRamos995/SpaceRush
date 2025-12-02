@@ -35,6 +35,11 @@ namespace SpaceRush.Core
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         private void Start()
         {
             GameLogger.Log("Space Rush: Idle Trading Empire - Game Started");

@@ -28,6 +28,11 @@ namespace SpaceRush.Systems
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         private void Start()
         {
             StartCoroutine(UpdateMarketPrices());
@@ -40,13 +45,13 @@ namespace SpaceRush.Systems
                 foreach (var resource in ResourceManager.Instance.GetAllResources())
                 {
                     // 1. Random fluctuation +/- 5%
-                    float fluctuation = Random.Range(0.95f, 1.05f);
+                    float fluctuation = UnityEngine.Random.Range(0.95f, 1.05f);
 
                     // 2. Trend Logic (Simple random walk for now)
                     if (!priceMultipliers.ContainsKey(resource.Type)) priceMultipliers[resource.Type] = 1.0f;
 
                     // Slightly drift the trend
-                    priceMultipliers[resource.Type] *= Random.Range(0.98f, 1.02f);
+                    priceMultipliers[resource.Type] *= UnityEngine.Random.Range(0.98f, 1.02f);
                     priceMultipliers[resource.Type] = Mathf.Clamp(priceMultipliers[resource.Type], 0.5f, 2.0f); // Cap between 50% and 200%
 
                     resource.CurrentMarketValue = resource.BaseValue * fluctuation * priceMultipliers[resource.Type];
@@ -62,7 +67,7 @@ namespace SpaceRush.Systems
 
         public float GetSellPrice(ResourceType type)
         {
-            var res = ResourceManager.Instance.GetResource(type);
+            var res = ResourceManager.Instance.GetResourceData(type);
             if (res == null) return 0;
             return res.CurrentMarketValue;
         }
@@ -75,7 +80,7 @@ namespace SpaceRush.Systems
 
         public void SellResource(ResourceType type, int amount)
         {
-            var res = ResourceManager.Instance.GetResource(type);
+            var res = ResourceManager.Instance.GetResourceData(type);
             if (res == null || amount <= 0) return;
 
             if (res.Quantity >= amount)
@@ -96,7 +101,7 @@ namespace SpaceRush.Systems
 
         public void BuyResource(ResourceType type, int amount)
         {
-            var res = ResourceManager.Instance.GetResource(type);
+            var res = ResourceManager.Instance.GetResourceData(type);
             if (res == null || amount <= 0) return;
 
             float unitPrice = GetBuyPrice(type);

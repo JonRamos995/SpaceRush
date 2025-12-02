@@ -32,6 +32,11 @@ namespace SpaceRush.Systems
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         private void Start()
         {
             InitializeTechTree();
@@ -63,7 +68,7 @@ namespace SpaceRush.Systems
             if (ResourceManager.Instance.SpendCredits(researcherCost))
             {
                 Researchers++;
-                Debug.Log($"Hired Researcher. Total: {Researchers}");
+                GameLogger.Log($"Hired Researcher. Total: {Researchers}");
             }
         }
 
@@ -73,7 +78,7 @@ namespace SpaceRush.Systems
             {
                 float pointsGained = creditAmount * 0.1f;
                 ResearchPoints += pointsGained;
-                Debug.Log($"Invested {creditAmount} credits for {pointsGained} RP.");
+                GameLogger.Log($"Invested {creditAmount} credits for {pointsGained} RP.");
             }
         }
 
@@ -90,7 +95,7 @@ namespace SpaceRush.Systems
                     ResearchPoints -= tech.Definition.ResearchPointsRequired;
                     tech.IsUnlocked = true;
                     ApplyTechEffect(tech);
-                    Debug.Log($"Unlocked {tech.Definition.Name}!");
+                    GameLogger.Log($"Unlocked {tech.Definition.Name}!");
                  }
             }
         }
@@ -143,7 +148,7 @@ namespace SpaceRush.Systems
             {
                 case "TERRAFORMING_BASICS":
                     CivilizationLevel += 0.5f;
-                    Debug.Log("Civilization Level Increased!");
+                    GameLogger.Log("Civilization Level Increased!");
                     break;
                 case "EFFICIENCY_1":
                     FleetManager.Instance.RecalculateStats();

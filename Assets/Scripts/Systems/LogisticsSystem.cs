@@ -23,6 +23,11 @@ namespace SpaceRush.Systems
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         private void Start()
         {
             StartCoroutine(AutomatedLogisticsLoop());
@@ -65,7 +70,7 @@ namespace SpaceRush.Systems
 
                     // Add to Global Inventory
                     ResourceManager.Instance.AddResource(type, amount);
-                    Debug.Log($"Collected {amount} {type} from {loc.Definition.Name}");
+                    GameLogger.Log($"Collected {amount} {type} from {loc.Definition.Name}");
                 }
             }
         }

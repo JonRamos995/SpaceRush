@@ -28,6 +28,11 @@ namespace SpaceRush.Core
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         public void SaveGame()
         {
             GameSaveData data = new GameSaveData();

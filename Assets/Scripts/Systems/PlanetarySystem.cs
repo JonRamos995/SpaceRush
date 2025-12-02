@@ -26,6 +26,11 @@ namespace SpaceRush.Systems
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         private void Start()
         {
             StartCoroutine(PlanetaryProductionLoop());
@@ -50,7 +55,7 @@ namespace SpaceRush.Systems
             }
         }
 
-        private void ProduceResources(LocationState loc)
+        public void ProduceResources(LocationState loc)
         {
             // Production formula: MiningLevel * BiomeMultiplier (1.0 for now)
             int productionAmount = loc.Infrastructure.MiningLevel;
@@ -70,7 +75,7 @@ namespace SpaceRush.Systems
             // Produce random available resource from Definition
             if (loc.Definition.AvailableResources.Count > 0)
             {
-                var resType = loc.Definition.AvailableResources[Random.Range(0, loc.Definition.AvailableResources.Count)];
+                var resType = loc.Definition.AvailableResources[UnityEngine.Random.Range(0, loc.Definition.AvailableResources.Count)];
 
                 if (!loc.Stockpile.ContainsKey(resType))
                     loc.Stockpile[resType] = 0;

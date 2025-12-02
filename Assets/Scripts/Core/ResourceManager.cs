@@ -25,6 +25,11 @@ namespace SpaceRush.Core
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         private void InitializeResources()
         {
             resources = new Dictionary<ResourceType, ResourceData>();
@@ -55,7 +60,7 @@ namespace SpaceRush.Core
         public void AddCredits(float amount)
         {
             Credits += amount;
-            Debug.Log($"Credits added: {amount}. Total: {Credits}");
+            GameLogger.Log($"Credits added: {amount}. Total: {Credits}");
         }
 
         public bool SpendCredits(float amount)
@@ -63,7 +68,7 @@ namespace SpaceRush.Core
             if (Credits >= amount)
             {
                 Credits -= amount;
-                Debug.Log($"Credits spent: {amount}. Total: {Credits}");
+                GameLogger.Log($"Credits spent: {amount}. Total: {Credits}");
                 return true;
             }
             return false;
@@ -82,7 +87,7 @@ namespace SpaceRush.Core
             if (resources.ContainsKey(type))
             {
                 resources[type].Quantity += amount;
-                Debug.Log($"Added {amount} {type}. Total: {resources[type].Quantity}");
+                GameLogger.Log($"Added {amount} {type}. Total: {resources[type].Quantity}");
             }
         }
 

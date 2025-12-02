@@ -28,18 +28,21 @@ namespace SpaceRush.Tests
             // For this test, we might need to manually populate GameDatabase or use reflection to call Awake.
             // Or just call the method if we make it public. Awake is private.
             // We can use SendMessage or similar.
-            db.SendMessage("Awake");
+            // db.SendMessage("Awake"); // Removed: AddComponent calls Awake automatically in Mock
 
             researchManager = gameGameObject.AddComponent<ResearchManager>();
-            researchManager.SendMessage("Awake");
+            // researchManager.SendMessage("Awake"); // Removed: AddComponent calls Awake automatically in Mock
             researchManager.SendMessage("Start");
+
+            // FleetManager (required for tech effects)
+            gameGameObject.AddComponent<FleetManager>();
         }
 
         [TearDown]
         public void Teardown()
         {
-            if (GameDatabase.Instance != null) Object.DestroyImmediate(GameDatabase.Instance.gameObject);
-            Object.DestroyImmediate(gameGameObject);
+            if (GameDatabase.Instance != null) UnityEngine.Object.DestroyImmediate(GameDatabase.Instance.gameObject);
+            UnityEngine.Object.DestroyImmediate(gameGameObject);
         }
 
         [Test]
@@ -55,6 +58,9 @@ namespace SpaceRush.Tests
         {
             // Pick a cheap tech
             string techID = "EFFICIENCY_1"; // Cost 100 RP
+
+            // Grant Credits first
+            resourceManager.AddCredits(1000);
 
             // Grant RP
             researchManager.InvestInResearch(1000); // Should give 100 RP
