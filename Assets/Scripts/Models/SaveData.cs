@@ -14,6 +14,15 @@ namespace SpaceRush.Models
         public FleetSaveData Fleet;
         public ResearchSaveData Research;
         public List<LocationSaveData> Locations = new List<LocationSaveData>();
+        public List<LogisticsAllocationSaveData> LogisticsAllocations = new List<LogisticsAllocationSaveData>();
+        public WorkshopSaveData Workshop = new WorkshopSaveData();
+    }
+
+    [Serializable]
+    public class LogisticsAllocationSaveData
+    {
+        public ResourceType Type;
+        public float Percentage;
     }
 
     [Serializable]
@@ -49,6 +58,7 @@ namespace SpaceRush.Models
         public int LogisticsLevel;
         public int StationLevel;
 
+        public List<ResourceSaveData> InstalledMachines = new List<ResourceSaveData>();
         public List<ResourceSaveData> Stockpile = new List<ResourceSaveData>();
     }
 }

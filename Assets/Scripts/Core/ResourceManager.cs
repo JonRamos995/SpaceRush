@@ -44,6 +44,14 @@ namespace SpaceRush.Core
             AddResourceDefinition(new ResourceData(ResourceType.Circuit, "Circuit", 120f));
             AddResourceDefinition(new ResourceData(ResourceType.Hydrogen, "Hydrogen", 25f));
 
+            // New Resources
+            AddResourceDefinition(new ResourceData(ResourceType.IronIngot, "Iron Ingot", 20f));
+            AddResourceDefinition(new ResourceData(ResourceType.GoldIngot, "Gold Ingot", 100f));
+            AddResourceDefinition(new ResourceData(ResourceType.Plating, "Plating", 50f));
+            AddResourceDefinition(new ResourceData(ResourceType.MiningDrill, "Mining Drill", 500f));
+            AddResourceDefinition(new ResourceData(ResourceType.AutoMiner, "Auto Miner", 2000f));
+            AddResourceDefinition(new ResourceData(ResourceType.LogisticsBot, "Logistics Bot", 1000f));
+
             Credits = 0f;
         }
 
