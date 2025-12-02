@@ -39,6 +39,16 @@
       "RequiredTechID": "MICRO_G_MINING",
       "MinShipLevel": 3,
       "RequiresShipOperational": true
+    },
+    {
+      "ID": "JUPITER",
+      "Name": "Jupiter",
+      "TravelCost": 5000,
+      "Biome": 4,
+      "AvailableResources": [7],
+      "RequiredTechID": "GAS_SCOOPS",
+      "MinShipLevel": 4,
+      "RequiresShipOperational": true
     }
   ]
 }

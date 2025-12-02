@@ -17,6 +17,10 @@ namespace SpaceRush.Tests
         [SetUp]
         public void Setup()
         {
+            if (GameManager.Instance != null) Object.DestroyImmediate(GameManager.Instance.gameObject);
+            if (ResourceManager.Instance != null) Object.DestroyImmediate(ResourceManager.Instance.gameObject);
+            if (TradingSystem.Instance != null) Object.DestroyImmediate(TradingSystem.Instance.gameObject);
+
             gameGameObject = new GameObject("GameManager");
             resourceManager = gameGameObject.AddComponent<ResourceManager>();
             tradingSystem = gameGameObject.AddComponent<TradingSystem>();

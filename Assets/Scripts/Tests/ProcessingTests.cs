@@ -14,6 +14,9 @@ namespace SpaceRush.Tests
         [SetUp]
         public void Setup()
         {
+            if (GameManager.Instance != null) Object.DestroyImmediate(GameManager.Instance.gameObject);
+            if (GameDatabase.Instance != null) Object.DestroyImmediate(GameDatabase.Instance.gameObject);
+
             gameObj = new GameObject("GameManager");
             gameObj.AddComponent<GameDatabase>();
             // Force load by calling InitializeDatabase via reflection (it's private) or just let Awake handle it
