@@ -51,6 +51,7 @@ namespace SpaceRush.Core
             AddResourceDefinition(new ResourceData(ResourceType.Titanium, "Titanium", 80f));
             AddResourceDefinition(new ResourceData(ResourceType.Helium3, "Helium-3", 200f));
             AddResourceDefinition(new ResourceData(ResourceType.CryoFluid, "Cryo-Fluid", 120f));
+            AddResourceDefinition(new ResourceData(ResourceType.Ice, "Ice", 5f));
 
             // New Resources
             AddResourceDefinition(new ResourceData(ResourceType.IronIngot, "Iron Ingot", 20f));

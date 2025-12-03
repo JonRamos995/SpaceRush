@@ -17,6 +17,8 @@ namespace SpaceRush.Systems
         public bool IsOperational => RepairStatus >= 100f;
         public float RepairCostPerTick { get; private set; } = 10f; // Credits needed per tick to repair
 
+        private float autoRepairTimer = 0f;
+
         private void Awake()
         {
             if (Instance == null)
@@ -33,6 +35,32 @@ namespace SpaceRush.Systems
         private void OnDestroy()
         {
             if (Instance == this) Instance = null;
+        }
+
+        private void Update()
+        {
+            // Auto-Repair Logic
+            if (ResearchManager.Instance != null && ResearchManager.Instance.IsFeatureUnlocked("REPAIR_DROID"))
+            {
+                if (!IsOperational)
+                {
+                    autoRepairTimer += Time.deltaTime;
+                    if (autoRepairTimer >= 1.0f)
+                    {
+                        autoRepairTimer = 0f;
+                        AttemptAutoRepair();
+                    }
+                }
+            }
+        }
+
+        private void AttemptAutoRepair()
+        {
+            if (ResourceManager.Instance.SpendCredits(RepairCostPerTick))
+            {
+                RepairShip(5.0f); // Same rate as manual
+                GameLogger.Log("Auto-Repair Droid active.");
+            }
         }
 
         public float GetUpgradeCost()
@@ -99,10 +127,18 @@ namespace SpaceRush.Systems
             float baseSpeed = 1.0f * Mathf.Pow(1.2f, ShipLevel - 1);
             int baseCapacity = 10 * ShipLevel;
 
-            // Apply Tech Bonuses
-            if (ResearchManager.Instance.IsTechUnlocked("EFFICIENCY_1"))
+            // Apply Tech Bonuses (Refactored to use generic stat bonus)
+            if (ResearchManager.Instance != null)
             {
-                baseSpeed *= 1.1f; // +10%
+                // Old Check for backward compatibility or direct bonus
+                // if (ResearchManager.Instance.IsTechUnlocked("EFFICIENCY_1")) baseSpeed *= 1.1f;
+
+                // New System
+                float bonus = ResearchManager.Instance.GetStatBonus("MiningSpeed");
+                if (bonus > 0)
+                {
+                    baseSpeed *= (1.0f + bonus);
+                }
             }
 
             // Apply Civilization Bonus

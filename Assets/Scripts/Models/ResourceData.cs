@@ -24,7 +24,8 @@ namespace SpaceRush.Models
         // Expansion 1
         Titanium,
         Helium3,
-        CryoFluid
+        CryoFluid,
+        Ice
     }
 
     [System.Serializable]
