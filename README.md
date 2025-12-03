@@ -1,28 +1,65 @@
 # Space Rush: Idle Trading Empire
 
-## Game Overview
-Space Rush is a sci-fi incremental game where you begin as a survivor on a damaged ship grounded on Earth. From these humble beginnings, you will repair your vessel, expand to the stars, and build an intergalactic trading empire that elevates humanity to a new civilization level.
+## Project Goal
+**Target:** Production-Ready Google Play Store Release.
 
-## The Goal
-**Start from zero, repair your ship, and monopolize the galaxy's resources to advance civilization.**
+The goal of this project is to deliver a polished, scalable, and modular incremental sci-fi trading game for Android. The final product must be ready for submission to the Google Play Store, featuring robust cloud integration, monetization, and a fully data-driven architecture that allows for easy content expansion (new planets, techs, upgrades) without modifying the source code.
 
-## The Narrative Arc
-1.  **Survival (Earth)**: You start with 0 credits and a broken ship. You must scrape together funds (or wait for slow repairs) to get your systems online.
-2.  **Expansion (Solar System)**: Once operational, you travel to the Moon and Mars, mining basic resources like Iron and Gold.
-3.  **Industrialization (Asteroid Belt)**: Unlock the rich mineral fields of the Asteroid Belt to fuel your growing economy.
-4.  **Advancement**: Hire researchers and invest in technology. Your discoveries don't just help you mine faster; they transform the world, increasing the "Civilization Level" and unlocking new possibilities.
+---
 
-## Core Gameplay Loop
+## Current State
+**Status:** Functional Vertical Slice (Backend Heavy)
 
-1.  **Repair & Prepare**: In the early game, focus on getting your ship to 100% integrity.
-2.  **Harvest**: Automatically mine resources based on your current location (`LocationManager`). Earth offers little, but the Moon and Mars are rich in minerals.
-3.  **Trade**: The `TradingSystem` sells your goods. Use the market to fund your operations.
-4.  **Research**: Use the `ResearchManager` to hire scientists. Unlock "Mining Efficiency", "Advanced Propulsion", and "Terraforming" to progress.
-5.  **Upgrade**: Improve your `FleetManager` stats to carry more cargo and travel to distant sectors.
+The project currently possesses a solid backend foundation with verified core loops. The game logic for Mining, Trading, Crafting (Workshop), and Fleet Management is implemented and covered by a comprehensive suite of "Shadow Tests" (headless unit tests).
 
-## Key Features
+Key systems are functional:
+*   **Economy:** Resources are generated, stored, and traded dynamically.
+*   **Progression:** Tech tree and Ship upgrades work.
+*   **Persistence:** Local JSON saving/loading is robust.
+*   **Quality Assurance:** High test coverage for backend logic.
 
-*   **Narrative Progression**: A clear path from a stranded pilot to a galactic CEO.
-*   **Location System**: Different planets yield different resources. You must unlock travel to higher-tier locations.
-*   **Research Tree**: Invest in the future. Unlocking tech is the key to exponential growth.
-*   **Idle Mechanics**: Offline progress calculates your gains based on where you parked your ship.
+However, the project is **NOT** yet production-ready. Several systems rely on hardcoded logic or mock implementations that must be replaced with scalable, real-world solutions before release.
+
+---
+
+## Missing / Incomplete Features
+To achieve the "Production Ready" goal, the following critical tasks must be completed:
+
+### 1. Google Play Services Re-integration (0%)
+*   **Requirement:** The `READ ME.txt` notes that Google Play Services were removed due to errors.
+*   **Task:** Re-import the plugin and implement:
+    *   **Authentication:** Silent sign-in.
+    *   **Cloud Save:** Sync `PersistenceManager` JSON data to Google Drive/Cloud.
+    *   **Achievements:** Link in-game milestones to Play Games Services.
+    *   **Leaderboards:** Track "Civilization Level" or "Net Worth".
+
+### 2. Monetization & Notifications (Mocked -> Real)
+*   **AdManager (10%):** Currently a stub (`Debug.Log` only). Needs integration with Google Mobile Ads SDK (AdMob) for Rewarded Video ads (double idle gains).
+*   **NotificationManager (10%):** Currently a stub. Needs Android Notification Channel implementation for "Research Complete" or "Ship Repaired" local push notifications.
+
+### 3. Data-Driven Refactoring (Scalability)
+*   **Civilization System:** The `CivilizationManager` currently defines upgrades (e.g., "Resource Retention") via hardcoded C# code (`InitializeUpgrades`). This must be moved to `Assets/Resources/Data/civilization.json` to be modular.
+*   **Tech & Planetary Links:** `PlanetarySystem` and `ResearchManager` currently use hardcoded `switch` statements to check for specific IDs (e.g., `case "ENV_SUIT_MK2"`). This violates the modularity requirement. This needs to be refactored into a generic "Tag" or "Effect" system so new technologies can affect planets without changing C# code.
+
+---
+
+## Feature Completion Report (Backend Logic)
+*Percentages reflect Code Quality, Modularity, and Scalability, not just "does it work".*
+
+| Feature | Completion | Details |
+| :--- | :--- | :--- |
+| **Trading System** | **100%** | Fully modular. Dynamic price fluctuations, events, and buying/selling logic are robust and data-driven. |
+| **Fleet Manager** | **95%** | Logic is solid. Uses generic stat lookups. Only minor coupling to specific features (Repair Droid). |
+| **Logistics System** | **90%** | cargo transfer logic is clean and testable. Minor hardcoded dependency on specific Tech IDs for automation. |
+| **Workshop Manager** | **90%** | Crafting, recipes, and automation are well-implemented using `GameDatabase`. Very stable. |
+| **Research System** | **70%** | The command pattern is present, but the mapping of `TechID` -> `Effect` is still hardcoded in `AssignEffectsToTech`. |
+| **Planetary System** | **60%** | Functional, but heavily coupled. `ProduceResources` contains hardcoded `if (Tech == "ENV_SUIT_MK2")` checks, making it hard to expand without code changes. |
+| **Civilization System**| **40%** | Prestige logic works, but the Upgrade content is hardcoded in the class. Needs a full data-driven refactor. |
+| **Ads & Notifications**| **10%** | Purely mock implementations. Logic structure exists, but no real functionality. |
+
+---
+
+## Technical Notes for Developers
+*   **Testing:** Run `dotnet test` in `ShadowTests/` to verify backend logic changes.
+*   **Data:** All game data should live in `Assets/Resources/Data/`. Avoid adding new content directly in C# classes.
+*   **UI:** UI scripts are located in `Assets/Scripts/UI` and connect to Managers via Singletons. Ensure Managers emit events or use callbacks rather than UI polling where possible.
