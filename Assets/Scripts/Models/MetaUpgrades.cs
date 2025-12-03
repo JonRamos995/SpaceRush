@@ -6,14 +6,15 @@ using SpaceRush.Models; // For SaveData
 namespace SpaceRush.Models
 {
     // --- Definition ---
-    [CreateAssetMenu(fileName = "New Meta Upgrade", menuName = "SpaceRush/Meta/Upgrade")]
-    public class MetaUpgradeDefinition : ScriptableObject
+    [System.Serializable]
+    public class MetaUpgradeDefinition
     {
         public string ID;
         public string Name;
         public string Description;
         public float Cost; // In Nanites
         public MetaUpgradeEffect Effect;
+        public List<EffectData> EffectDataList = new List<EffectData>();
 
         public MetaUpgradeDefinition(string id, string name, string desc, float cost)
         {

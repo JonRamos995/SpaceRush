@@ -33,7 +33,6 @@ namespace SpaceRush.Systems
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                InitializeUpgrades();
             }
             else
             {
@@ -41,38 +40,23 @@ namespace SpaceRush.Systems
             }
         }
 
+        private void Start()
+        {
+            InitializeUpgrades();
+        }
+
         private void OnDestroy()
         {
             if (Instance == this) Instance = null;
         }
 
-        private void InitializeUpgrades()
+        public void InitializeUpgrades()
         {
-            // In a real app, load from Resources/GameDatabase.
-            // Here we manually create some for the task.
-
-            // 1. Retention Upgrade
-            var retDef = ScriptableObject.CreateInstance<MetaUpgradeDefinition>();
-            retDef.ID = "RETENTION_1";
-            retDef.Name = "Resource Cache";
-            retDef.Description = "Keep 10% of resources after Ascension.";
-            retDef.Cost = 50f;
-            var retEff = ScriptableObject.CreateInstance<MetaRetentionEffect>();
-            retEff.PercentageToKeep = 0.1f;
-            retDef.Effect = retEff;
-            availableUpgrades.Add(retDef);
-
-            // 2. Speed Upgrade
-            var spdDef = ScriptableObject.CreateInstance<MetaUpgradeDefinition>();
-            spdDef.ID = "GLOBAL_SPEED_1";
-            spdDef.Name = "Temporal Flux";
-            spdDef.Description = "Increase Global Mining Speed by 50%.";
-            spdDef.Cost = 100f;
-            var spdEff = ScriptableObject.CreateInstance<MetaStatMultiplierEffect>();
-            spdEff.StatName = "GlobalMiningSpeed";
-            spdEff.Multiplier = 0.5f; // Additive +50%
-            spdDef.Effect = spdEff;
-            availableUpgrades.Add(spdDef);
+            availableUpgrades.Clear();
+            if (GameDatabase.Instance != null && GameDatabase.Instance.MetaUpgrades != null)
+            {
+                availableUpgrades.AddRange(GameDatabase.Instance.MetaUpgrades);
+            }
         }
 
         public void LoadData(CivilizationSaveData data)
@@ -156,9 +140,30 @@ namespace SpaceRush.Systems
         private void ApplyUpgradeEffect(string id)
         {
             var upgrade = availableUpgrades.Find(u => u.ID == id);
-            if (upgrade != null && upgrade.Effect != null)
+            if (upgrade != null)
             {
-                upgrade.Effect.ApplyRuntime();
+                // New Data-Driven Effects
+                if (upgrade.EffectDataList != null)
+                {
+                    foreach (var effect in upgrade.EffectDataList)
+                    {
+                        switch(effect.EffectType)
+                        {
+                            case "StatMultiplier":
+                                AddGlobalMultiplier(effect.Target, effect.Value);
+                                break;
+                            case "Retention":
+                                RegisterRetention(effect.Value);
+                                break;
+                        }
+                    }
+                }
+
+                // Legacy Support
+                if (upgrade.Effect != null)
+                {
+                    upgrade.Effect.ApplyRuntime();
+                }
             }
         }
 

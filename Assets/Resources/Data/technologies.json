@@ -5,70 +5,142 @@
       "Name": "Mining Efficiency I",
       "Description": "Improves mining speed by 10%",
       "Cost": 500,
-      "ResearchPointsRequired": 100
+      "ResearchPointsRequired": 100,
+      "EffectDataList": [
+        {
+          "EffectType": "StatBonus",
+          "Target": "MiningSpeed",
+          "Value": 0.1
+        }
+      ]
     },
     {
       "ID": "MARKET_ANALYSIS",
       "Name": "Market Analysis AI",
       "Description": "Better trade prices",
       "Cost": 1000,
-      "ResearchPointsRequired": 250
+      "ResearchPointsRequired": 250,
+      "EffectDataList": [
+         {
+          "EffectType": "StatBonus",
+          "Target": "TradePrice",
+          "Value": 0.1
+        }
+      ]
     },
     {
       "ID": "ADV_PROPULSION",
       "Name": "Advanced Propulsion",
       "Description": "Unlocks distant planets",
       "Cost": 5000,
-      "ResearchPointsRequired": 1000
+      "ResearchPointsRequired": 1000,
+      "EffectDataList": []
     },
     {
       "ID": "TERRAFORMING_BASICS",
       "Name": "Terraforming Basics",
       "Description": "Increases Civilization Level",
       "Cost": 10000,
-      "ResearchPointsRequired": 2500
+      "ResearchPointsRequired": 2500,
+      "EffectDataList": []
     },
     {
       "ID": "ENV_SUIT_MK2",
       "Name": "Environmental Suits Mk2",
       "Description": "Allows mining on Mars-like planets",
       "Cost": 2000,
-      "ResearchPointsRequired": 500
+      "ResearchPointsRequired": 500,
+      "EffectDataList": [
+        {
+          "EffectType": "BiomeBonus",
+          "Target": "Barren",
+          "Value": 0.2
+        }
+      ]
     },
     {
       "ID": "MICRO_G_MINING",
       "Name": "Micro-G Anchors",
       "Description": "Allows mining in Asteroid Belts",
       "Cost": 3000,
-      "ResearchPointsRequired": 800
+      "ResearchPointsRequired": 800,
+      "EffectDataList": [
+        {
+          "EffectType": "BiomeBonus",
+          "Target": "AsteroidField",
+          "Value": 0.2
+        }
+      ]
     },
     {
       "ID": "THERMAL_SHIELDING",
       "Name": "Thermal Shielding",
       "Description": "Allows mining on Volcanic planets",
       "Cost": 8000,
-      "ResearchPointsRequired": 2000
+      "ResearchPointsRequired": 2000,
+      "EffectDataList": [
+        {
+          "EffectType": "BiomeBonus",
+          "Target": "Volcanic",
+          "Value": 0.2
+        }
+      ]
     },
     {
       "ID": "AUTO_LOGISTICS",
       "Name": "Automated Logistics",
       "Description": "Unlock automated trade routes",
       "Cost": 5000,
-      "ResearchPointsRequired": 1500
+      "ResearchPointsRequired": 1500,
+      "EffectDataList": [
+        {
+           "EffectType": "UnlockFeature",
+           "Target": "AUTO_LOGISTICS",
+           "Value": 0.0
+        }
+      ]
     },
     {
       "ID": "GAS_SCOOPS",
       "Name": "Gas Mining Scoops",
       "Description": "Allows harvesting Hydrogen from Gas Giants",
       "Cost": 7500,
-      "ResearchPointsRequired": 2000
+      "ResearchPointsRequired": 2000,
+      "EffectDataList": [
+        {
+          "EffectType": "BiomeBonus",
+          "Target": "GasGiant",
+          "Value": 0.2
+        }
+      ]
     },
     {
       "ID": "CRYO_STABILIZER",
       "Name": "Cryo Stabilizers",
       "Description": "Allows mining on Ice planets",
       "Cost": 6000,
-      "ResearchPointsRequired": 1200
+      "ResearchPointsRequired": 1200,
+      "EffectDataList": [
+        {
+          "EffectType": "BiomeBonus",
+          "Target": "Ice",
+          "Value": 0.2
+        }
+      ]
+    },
+    {
+      "ID": "REPAIR_DROID",
+      "Name": "Repair Droid",
+      "Description": "Unlocks automatic ship repair",
+      "Cost": 2000,
+      "ResearchPointsRequired": 500,
+      "EffectDataList": [
+        {
+           "EffectType": "UnlockFeature",
+           "Target": "REPAIR_DROID",
+           "Value": 0.0
+        }
+      ]
     }
   ]
 }

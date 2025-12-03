@@ -4,8 +4,8 @@ using SpaceRush.Models;
 
 namespace SpaceRush.Data
 {
-    [CreateAssetMenu(fileName = "New Technology", menuName = "SpaceRush/Technology")]
-    public class TechDefinition : ScriptableObject
+    [System.Serializable]
+    public class TechDefinition
     {
         public string ID;
         public string Name;
@@ -15,6 +15,8 @@ namespace SpaceRush.Data
 
         // New: Command Pattern for effects
         public List<TechEffect> Effects = new List<TechEffect>();
+        // Data-driven effects from JSON
+        public List<EffectData> EffectDataList = new List<EffectData>();
 
         public TechDefinition(string id, string name, string desc, float cost, int rp)
         {

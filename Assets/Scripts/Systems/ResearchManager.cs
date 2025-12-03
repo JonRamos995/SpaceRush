@@ -23,6 +23,8 @@ namespace SpaceRush.Systems
         // New: Command Pattern Storage
         private Dictionary<string, float> statModifiers = new Dictionary<string, float>();
         private HashSet<string> unlockedFeatures = new HashSet<string>();
+        // New: Biome Modifiers
+        private Dictionary<BiomeType, float> biomeModifiers = new Dictionary<BiomeType, float>();
 
         private void Awake()
         {
@@ -52,44 +54,13 @@ namespace SpaceRush.Systems
             technologies = new List<TechState>();
             statModifiers.Clear();
             unlockedFeatures.Clear();
+            biomeModifiers.Clear();
 
             if (GameDatabase.Instance == null) return;
 
             foreach (var def in GameDatabase.Instance.Technologies)
             {
-                // Inject Effects (Simulating Editor setup)
-                AssignEffectsToTech(def);
                 technologies.Add(new TechState(def));
-            }
-        }
-
-        private void AssignEffectsToTech(TechDefinition def)
-        {
-            // Ideally, this is done in the Editor. Here we map legacy IDs to Effects.
-            if (def.Effects == null) def.Effects = new List<TechEffect>();
-
-            // Avoid duplicate additions if run multiple times
-            if (def.Effects.Count > 0) return;
-
-            switch (def.ID)
-            {
-                case "TERRAFORMING_BASICS":
-                    // This used to raise CivLevel, but CivLevel is now in CivilizationManager.
-                    // We can create a generic "ActionEffect" or handle it.
-                    // For now, let's skip or reimplement if needed.
-                    break;
-                case "EFFICIENCY_1":
-                    var eff = ScriptableObject.CreateInstance<StatBonusEffect>();
-                    eff.StatName = "MiningSpeed";
-                    eff.Modifier = 0.1f;
-                    def.Effects.Add(eff);
-                    break;
-                case "REPAIR_DROID": // New Tech
-                    var rep = ScriptableObject.CreateInstance<UnlockFeatureEffect>();
-                    rep.FeatureID = "REPAIR_DROID";
-                    def.Effects.Add(rep);
-                    break;
-                // Add other tech mappings here
             }
         }
 
@@ -127,6 +98,7 @@ namespace SpaceRush.Systems
             ResearchPoints = 0;
             statModifiers.Clear();
             unlockedFeatures.Clear();
+            biomeModifiers.Clear();
 
             if (technologies != null)
             {
@@ -156,6 +128,33 @@ namespace SpaceRush.Systems
 
         private void ApplyTechEffects(TechState tech)
         {
+            if (tech.Definition.EffectDataList != null)
+            {
+                foreach (var effect in tech.Definition.EffectDataList)
+                {
+                    switch (effect.EffectType)
+                    {
+                        case "StatBonus":
+                            AddStatBonus(effect.Target, effect.Value);
+                            break;
+                        case "UnlockFeature":
+                            UnlockFeature(effect.Target);
+                            break;
+                        case "BiomeBonus":
+                            if (System.Enum.TryParse(effect.Target, out BiomeType biome))
+                            {
+                                AddBiomeBonus(biome, effect.Value);
+                            }
+                            else
+                            {
+                                GameLogger.LogError($"Invalid BiomeType in Effect: {effect.Target}");
+                            }
+                            break;
+                    }
+                }
+            }
+
+            // Legacy Support for ScriptableObjects if needed (optional)
             if (tech.Definition.Effects != null)
             {
                 foreach (var effect in tech.Definition.Effects)
@@ -199,6 +198,18 @@ namespace SpaceRush.Systems
             return unlockedFeatures.Contains(featureID);
         }
 
+        public void AddBiomeBonus(BiomeType biome, float amount)
+        {
+            if (!biomeModifiers.ContainsKey(biome)) biomeModifiers[biome] = 0f;
+            biomeModifiers[biome] += amount;
+        }
+
+        public float GetBiomeBonus(BiomeType biome)
+        {
+            if (biomeModifiers.ContainsKey(biome)) return biomeModifiers[biome];
+            return 0f;
+        }
+
         // --- Legacy/Support ---
 
         public bool IsTechUnlocked(string techID)
@@ -226,6 +237,7 @@ namespace SpaceRush.Systems
             // Clear previous effects to avoid doubling up on load
             statModifiers.Clear();
             unlockedFeatures.Clear();
+            biomeModifiers.Clear();
 
             if (data.UnlockedTechIDs != null)
             {

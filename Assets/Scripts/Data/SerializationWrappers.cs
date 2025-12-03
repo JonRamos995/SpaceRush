@@ -21,4 +21,10 @@ namespace SpaceRush.Data
     {
         public List<RecipeDefinition> Items;
     }
+
+    [System.Serializable]
+    public class CivilizationDataWrapper
+    {
+        public List<MetaUpgradeDefinition> Items;
+    }
 }
