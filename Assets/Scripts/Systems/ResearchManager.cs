@@ -211,7 +211,14 @@ namespace SpaceRush.Systems
 
         public List<string> GetUnlockedTechIDs()
         {
+            if (technologies == null) InitializeTechTree();
             return technologies.Where(t => t.IsUnlocked).Select(t => t.ID).ToList();
+        }
+
+        public List<TechState> GetAllTechs()
+        {
+            if (technologies == null) InitializeTechTree();
+            return technologies;
         }
 
         public void LoadData(ResearchSaveData data)

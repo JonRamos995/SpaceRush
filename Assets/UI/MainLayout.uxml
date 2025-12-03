@@ -1,0 +1,96 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Style src="Theme.uss" />
+
+    <ui:VisualElement name="ScreenContainer" class="screen-container">
+
+        <!-- TOP HUD -->
+        <ui:VisualElement name="HeaderBar" class="header-bar">
+            <ui:Label name="CreditsLabel" text="Credits: 0" style="width: 30%;" />
+            <ui:Label name="LocationLabel" text="Location: Deep Space" style="width: 40%; -unity-text-align: middle-center;" />
+            <ui:Label name="HullLabel" text="Hull: 100%" style="width: 30%; -unity-text-align: middle-right;" />
+        </ui:VisualElement>
+
+        <!-- MAIN CONTENT -->
+        <ui:VisualElement name="ContentArea" class="content-area">
+
+            <!-- Dashboard View -->
+            <ui:ScrollView name="View-Dashboard" class="panel panel--active">
+                <ui:Label text="Ship Dashboard" class="label-title" />
+                <ui:Label name="Dashboard-Stats" text="Waiting for data..." />
+                <ui:VisualElement style="flex-direction: row; margin-top: 10px;">
+                    <ui:Button name="Btn-RepairShip" text="Repair Ship" class="button" />
+                    <ui:Button name="Btn-UpgradeShip" text="Upgrade Ship" class="button" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+
+            <!-- Locations View -->
+            <ui:VisualElement name="View-Locations" class="panel">
+                <ui:Label text="Navigation Chart" class="label-title" />
+                <ui:ScrollView name="Location-List" />
+            </ui:VisualElement>
+
+            <!-- Location Details View -->
+            <ui:VisualElement name="View-LocationDetails" class="panel">
+                <ui:Label name="LocDetails-Name" text="Planet Name" class="label-title" />
+                <ui:Label name="LocDetails-Info" text="Info..." />
+
+                <ui:VisualElement style="flex-direction: row; flex-wrap: wrap; margin-top: 10px;">
+                     <ui:Button name="Btn-Investigate" text="Investigate (500 CR)" class="button" />
+                     <ui:Button name="Btn-StartMining" text="Start Mining (1000 CR)" class="button" />
+                     <ui:Button name="Btn-UpgradeMining" text="Upgrade Mining" class="button" />
+                     <ui:Button name="Btn-UpgradeStation" text="Upgrade Station" class="button" />
+                     <ui:Button name="Btn-UpgradeLogistics" text="Upgrade Logistics" class="button" />
+                     <ui:Button name="Btn-BackToNav" text="Back" class="button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- Workshop View -->
+            <ui:VisualElement name="View-Workshop" class="panel">
+                <ui:Label text="Workshop" class="label-title" />
+                <ui:ScrollView name="Workshop-List" />
+            </ui:VisualElement>
+
+            <!-- Market View -->
+            <ui:VisualElement name="View-Market" class="panel">
+                <ui:Label text="Marketplace" class="label-title" />
+                <ui:ScrollView name="Market-List" />
+            </ui:VisualElement>
+
+            <!-- Logistics View -->
+            <ui:VisualElement name="View-Logistics" class="panel">
+                <ui:Label text="Logistics Management" class="label-title" />
+                <ui:ScrollView name="Logistics-List" />
+            </ui:VisualElement>
+
+             <!-- Research View -->
+            <ui:VisualElement name="View-Research" class="panel">
+                <ui:Label text="Research Lab" class="label-title" />
+                <ui:ScrollView name="Research-List" />
+            </ui:VisualElement>
+
+            <!-- Log View -->
+            <ui:VisualElement name="View-Log" class="panel">
+                <ui:Label text="Mission Log" class="label-title" />
+                <ui:ScrollView name="Log-List" />
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+
+        <!-- BOTTOM NAVIGATION -->
+        <ui:VisualElement name="NavBar" class="nav-bar">
+            <ui:Button name="Btn-Dashboard" text="DASH" class="button" />
+            <ui:Button name="Btn-Locations" text="NAV" class="button" />
+            <ui:Button name="Btn-Workshop" text="CRAFT" class="button" />
+            <ui:Button name="Btn-Market" text="TRADE" class="button" />
+            <ui:Button name="Btn-Logistics" text="TRNS" class="button" />
+            <ui:Button name="Btn-Research" text="TECH" class="button" />
+            <ui:Button name="Btn-Log" text="LOGS" class="button" />
+        </ui:VisualElement>
+
+        <!-- Footer -->
+        <ui:VisualElement name="FooterBar" style="background-color: var(--color-panel); padding: 4px; border-top-width: 1px; border-top-color: var(--color-accent);">
+            <ui:Label name="LastLogLabel" text="Ready." style="font-size: 12px; opacity: 0.8;" />
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>
