@@ -23,6 +23,10 @@ namespace SpaceRush.Models
     public class CivilizationSaveData
     {
         public int Level;
+        public float Nanites; // Replaces PrestigeCurrency concept
+        public List<string> UnlockedUpgradeIDs = new List<string>();
+
+        // Legacy support if needed, but for now we assume new saves
         public float PrestigeCurrency;
     }
 

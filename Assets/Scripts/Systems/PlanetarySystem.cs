@@ -2,7 +2,7 @@ using UnityEngine;
 using SpaceRush.Core;
 using SpaceRush.Models;
 using System.Collections;
-using SpaceRush.Data; // Needed for LocationDefinition properties access if used
+using SpaceRush.Data;
 
 namespace SpaceRush.Systems
 {
@@ -75,7 +75,10 @@ namespace SpaceRush.Systems
             // Tech Bonuses
             if (ResearchManager.Instance != null)
             {
-                if (ResearchManager.Instance.IsTechUnlocked("EFFICIENCY_1")) multiplier += 0.1f;
+                // New: Use Generic Stat Bonus if available, else fallback
+                float miningBonus = ResearchManager.Instance.GetStatBonus("MiningSpeed");
+                if (miningBonus > 0) multiplier += miningBonus;
+                else if (ResearchManager.Instance.IsTechUnlocked("EFFICIENCY_1")) multiplier += 0.1f;
 
                 switch (loc.Definition.Biome)
                 {
@@ -97,10 +100,27 @@ namespace SpaceRush.Systems
                 }
             }
 
+            // Synergy Boost (Consumption)
+            if (loc.Definition.HasSynergy)
+            {
+                // Consume 1 unit from Global Stockpile
+                if (ResourceManager.Instance.RemoveResource(loc.Definition.SynergyResource, 1))
+                {
+                    multiplier += loc.Definition.SynergyMultiplier;
+                }
+            }
+
+            // Civilization Bonus
+            if (CivilizationManager.Instance != null)
+            {
+                // Apply Global Multiplier (includes Level bonus + Meta Upgrades)
+                // Use generic "GlobalMiningSpeed" or similar. CivilizationManager.Multiplier maps to it.
+                multiplier *= CivilizationManager.Instance.Multiplier;
+            }
+
             productionAmount = Mathf.FloorToInt(productionAmount * multiplier);
 
             // Check Station Capacity
-            // Simple capacity logic: StationLevel * 100
             int capacity = loc.Infrastructure.StationLevel * 100;
             int currentStock = 0;
             foreach(var kvp in loc.Stockpile) currentStock += kvp.Value;
@@ -142,6 +162,16 @@ namespace SpaceRush.Systems
         private IEnumerator InvestigateRoutine(LocationState loc)
         {
             GameLogger.Log($"Investigating {loc.Definition.Name}...");
+
+            if (NotificationManager.Instance != null)
+            {
+                NotificationManager.Instance.ScheduleNotification(
+                    "Investigation Complete",
+                    $"We have finished scanning {loc.Definition.Name}!",
+                    INVESTIGATION_TIME
+                );
+            }
+
             yield return new WaitForSeconds(INVESTIGATION_TIME);
 
             loc.State = DiscoveryState.Investigated;
