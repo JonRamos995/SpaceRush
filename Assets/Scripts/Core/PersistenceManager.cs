@@ -142,6 +142,18 @@ namespace SpaceRush.Core
              // 1. Capture current Civ state
             var civData = CivilizationManager.Instance.GetSaveData();
 
+            // 1b. Calculate Retention
+            Dictionary<ResourceType, int> resourcesToKeep = new Dictionary<ResourceType, int>();
+            float retentionPct = CivilizationManager.Instance.GetRetentionPercentage();
+            if (retentionPct > 0)
+            {
+                foreach(var res in ResourceManager.Instance.GetAllResources())
+                {
+                    int keep = Mathf.FloorToInt(res.Quantity * retentionPct);
+                    if (keep > 0) resourcesToKeep[res.Type] = keep;
+                }
+            }
+
             // 2. Reset Memory State
             ResourceManager.Instance.ResetData();
             FleetManager.Instance.ResetData();
@@ -152,6 +164,16 @@ namespace SpaceRush.Core
 
             // 3. Restore Civ data
             CivilizationManager.Instance.LoadData(civData);
+
+            // 3b. Restore Retained Resources
+            if (resourcesToKeep.Count > 0)
+            {
+                foreach(var kvp in resourcesToKeep)
+                {
+                    ResourceManager.Instance.AddResource(kvp.Key, kvp.Value);
+                }
+                GameLogger.Log($"Ascension Retention: Kept resources based on {retentionPct:P0} retention.");
+            }
 
             // 4. Save the new state
             SaveGame();

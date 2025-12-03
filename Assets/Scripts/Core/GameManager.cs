@@ -119,6 +119,9 @@ namespace SpaceRush.Core
 
         private void HandleRepairs()
         {
+             // If Auto-Repair is unlocked, FleetManager handles it internally.
+             if (FleetManager.Instance != null && FleetManager.Instance.AutoRepairUnlocked) return;
+
              float cost = FleetManager.Instance.RepairCostPerTick;
              if (ResourceManager.Instance.SpendCredits(cost))
              {

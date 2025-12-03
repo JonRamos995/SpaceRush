@@ -18,6 +18,11 @@ namespace SpaceRush.Data
         public int MinShipLevel;
         public bool RequiresShipOperational;
 
+        // Synergy / Consumption Boost
+        public bool HasSynergy;
+        public ResourceType SynergyResource;
+        public float SynergyMultiplier; // e.g. 1.0 for +100%
+
         public LocationDefinition(string id, string name, float cost, BiomeType biome, List<ResourceType> resources, string techReq = null, int minShip = 0)
         {
             ID = id;
