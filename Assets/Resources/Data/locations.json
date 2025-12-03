@@ -49,6 +49,36 @@
       "RequiredTechID": "GAS_SCOOPS",
       "MinShipLevel": 4,
       "RequiresShipOperational": true
+    },
+    {
+      "ID": "MERCURY",
+      "Name": "Mercury",
+      "TravelCost": 3000,
+      "Biome": 2,
+      "AvailableResources": [0, 1, 14],
+      "RequiredTechID": "THERMAL_SHIELDING",
+      "MinShipLevel": 3,
+      "RequiresShipOperational": true
+    },
+    {
+      "ID": "SATURN",
+      "Name": "Saturn",
+      "TravelCost": 8000,
+      "Biome": 4,
+      "AvailableResources": [7, 15],
+      "RequiredTechID": "GAS_SCOOPS",
+      "MinShipLevel": 5,
+      "RequiresShipOperational": true
+    },
+    {
+      "ID": "TITAN",
+      "Name": "Titan",
+      "TravelCost": 8500,
+      "Biome": 3,
+      "AvailableResources": [16],
+      "RequiredTechID": "CRYO_STABILIZER",
+      "MinShipLevel": 5,
+      "RequiresShipOperational": true
     }
   ]
 }

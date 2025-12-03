@@ -81,6 +81,11 @@ namespace SpaceRush.Systems
                 CurrentLocation = Locations[0]; // Default to Earth
         }
 
+        public void ResetData()
+        {
+            InitializeLocations();
+        }
+
         public void DiscoverLocation(string id)
         {
             var loc = Locations.Find(l => l.ID == id);

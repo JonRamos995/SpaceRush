@@ -77,6 +77,13 @@ namespace SpaceRush.Systems
             }
         }
 
+        public void ResetData()
+        {
+            ShipLevel = 1;
+            RepairStatus = 0.0f;
+            RecalculateStats();
+        }
+
         public void LoadData(FleetSaveData data)
         {
             if (data == null) return;
@@ -96,6 +103,12 @@ namespace SpaceRush.Systems
             if (ResearchManager.Instance.IsTechUnlocked("EFFICIENCY_1"))
             {
                 baseSpeed *= 1.1f; // +10%
+            }
+
+            // Apply Civilization Bonus
+            if (CivilizationManager.Instance != null)
+            {
+                baseSpeed *= CivilizationManager.Instance.Multiplier;
             }
 
             MiningSpeed = baseSpeed;

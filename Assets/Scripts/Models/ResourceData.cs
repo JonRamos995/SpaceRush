@@ -20,7 +20,11 @@ namespace SpaceRush.Models
         // New Machines (Installable)
         MiningDrill,
         AutoMiner,
-        LogisticsBot
+        LogisticsBot,
+        // Expansion 1
+        Titanium,
+        Helium3,
+        CryoFluid
     }
 
     [System.Serializable]

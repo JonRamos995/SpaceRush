@@ -16,6 +16,14 @@ namespace SpaceRush.Models
         public List<LocationSaveData> Locations = new List<LocationSaveData>();
         public List<LogisticsAllocationSaveData> LogisticsAllocations = new List<LogisticsAllocationSaveData>();
         public WorkshopSaveData Workshop = new WorkshopSaveData();
+        public CivilizationSaveData Civilization = new CivilizationSaveData();
+    }
+
+    [Serializable]
+    public class CivilizationSaveData
+    {
+        public int Level;
+        public float PrestigeCurrency;
     }
 
     [Serializable]
