@@ -256,5 +256,15 @@ namespace SpaceRush.Systems
                 Slots = new List<WorkshopSlot>(Slots)
             };
         }
+
+        public List<RecipeDefinition> GetRecipesForMachine(MachineType machineType)
+        {
+            if (GameDatabase.Instance == null || GameDatabase.Instance.Recipes == null)
+                return new List<RecipeDefinition>();
+
+            return GameDatabase.Instance.Recipes
+                .Where(r => r.RequiredMachine == machineType)
+                .ToList();
+        }
     }
 }
