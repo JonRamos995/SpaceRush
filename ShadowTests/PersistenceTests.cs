@@ -30,6 +30,7 @@ namespace ShadowTests
             if (LocationManager.Instance != null) Object.DestroyImmediate(LocationManager.Instance.gameObject);
             if (ResourceManager.Instance != null) Object.DestroyImmediate(ResourceManager.Instance.gameObject);
             if (LogisticsSystem.Instance != null) Object.DestroyImmediate(LogisticsSystem.Instance.gameObject);
+            if (WorkshopManager.Instance != null) Object.DestroyImmediate(WorkshopManager.Instance.gameObject);
 
             // 1. Setup Database
             var dbGo = new GameObject("GameDatabase");
@@ -53,6 +54,7 @@ namespace ShadowTests
             if (lmStart != null) lmStart.Invoke(lm, null);
 
             logisticsSystem = systemsGo.AddComponent<LogisticsSystem>();
+            systemsGo.AddComponent<WorkshopManager>();
 
             // 3. Persistence Manager
             persistenceManager = systemsGo.AddComponent<PersistenceManager>();
@@ -102,6 +104,32 @@ namespace ShadowTests
 
             Assert.IsTrue(LogisticsSystem.Instance.CargoAllocations.ContainsKey(ResourceType.Gold), "Gold allocation missing.");
             Assert.AreEqual(0.2f, LogisticsSystem.Instance.CargoAllocations[ResourceType.Gold], "Gold pct mismatch.");
+        }
+
+        [Test]
+        public void VerifyWorkshopPersistence()
+        {
+            // 1. Modify Workshop State
+            WorkshopManager.Instance.UnlockSmelter(true); // Should be 2 smelters total
+            WorkshopManager.Instance.UnlockAssembler(true); // Should be 2 assemblers total
+
+            Assert.AreEqual(2, WorkshopManager.Instance.SmelterCount);
+            Assert.AreEqual(2, WorkshopManager.Instance.AssemblerCount);
+
+            // 2. Save
+            PersistenceManager.Instance.SaveGame();
+
+            // 3. Clear/Corrupt State
+            WorkshopManager.Instance.ResetData(); // Resets to 1 Smelter, 1 Assembler
+            Assert.AreEqual(1, WorkshopManager.Instance.SmelterCount);
+
+            // 4. Load
+            PersistenceManager.Instance.LoadGame();
+
+            // 5. Verify
+            Assert.AreEqual(2, WorkshopManager.Instance.SmelterCount, "Smelter count not restored");
+            Assert.AreEqual(2, WorkshopManager.Instance.AssemblerCount, "Assembler count not restored");
+            Assert.AreEqual(4, WorkshopManager.Instance.Slots.Count, "Slots not restored");
         }
     }
 }

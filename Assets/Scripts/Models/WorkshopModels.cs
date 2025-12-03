@@ -28,7 +28,9 @@ namespace SpaceRush.Models
     [Serializable]
     public class WorkshopSaveData
     {
-        public int UnlockedSlots;
+        public int UnlockedSlots; // Deprecated, but kept for structure
+        public int SmelterCount;
+        public int AssemblerCount;
         public List<WorkshopSlot> Slots = new List<WorkshopSlot>();
     }
 }
