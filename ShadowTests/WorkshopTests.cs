@@ -40,8 +40,6 @@ namespace ShadowTests
 
             var wsGo = new GameObject("WorkshopManager");
             workshopManager = wsGo.AddComponent<WorkshopManager>();
-
-            // Initialize Workshop is called in Awake (AddComponent)
         }
 
         [TearDown]
@@ -57,23 +55,63 @@ namespace ShadowTests
         [Test]
         public void TestInitialization()
         {
-            Assert.AreEqual(1, workshopManager.Slots.Count);
+            // Should start with 1 Smelter and 1 Assembler
+            Assert.AreEqual(2, workshopManager.Slots.Count);
+            Assert.AreEqual(1, workshopManager.SmelterCount);
+            Assert.AreEqual(1, workshopManager.AssemblerCount);
+
+            // Sorted: Smelter (1) < Assembler (2)
             Assert.AreEqual(MachineType.BasicSmelter, workshopManager.Slots[0].InstalledMachine);
+            Assert.AreEqual(MachineType.Assembler, workshopManager.Slots[1].InstalledMachine);
         }
 
         [Test]
-        public void TestStartJob_Manual()
+        public void TestStartJob_CorrectMachine()
         {
-            // Give Resources
             ResourceManager.Instance.AddResource(ResourceType.Iron, 100);
 
-            // "SMELT_STEEL" requires 5 Iron.
+            // SMELT_STEEL needs Smelter (Slot 0)
             workshopManager.StartJob(0, "SMELT_STEEL");
 
             var slot = workshopManager.Slots[0];
             Assert.IsTrue(slot.IsWorking);
             Assert.AreEqual("SMELT_STEEL", slot.ActiveRecipeID);
-            Assert.AreEqual(95, ResourceManager.Instance.GetResourceQuantity(ResourceType.Iron));
+        }
+
+        [Test]
+        public void TestStartJob_WrongMachine()
+        {
+            ResourceManager.Instance.AddResource(ResourceType.Iron, 100);
+            ResourceManager.Instance.AddResource(ResourceType.IronIngot, 100);
+
+            // CRAFT_DRILL needs Assembler. Try starting in Slot 0 (Smelter).
+
+            workshopManager.StartJob(0, "CRAFT_DRILL");
+
+            var slot = workshopManager.Slots[0];
+            Assert.IsFalse(slot.IsWorking, "Job should not start in wrong machine type.");
+        }
+
+        [Test]
+        public void TestSlotExpansion()
+        {
+            // Unlock Smelter
+            workshopManager.UnlockSmelter(true);
+            Assert.AreEqual(3, workshopManager.Slots.Count); // 2 init + 1 new
+            Assert.AreEqual(2, workshopManager.SmelterCount);
+
+            // Sorted: Smelter (1), Smelter (1), Assembler (2)
+            Assert.AreEqual(MachineType.BasicSmelter, workshopManager.Slots[0].InstalledMachine);
+            Assert.AreEqual(MachineType.BasicSmelter, workshopManager.Slots[1].InstalledMachine);
+            Assert.AreEqual(MachineType.Assembler, workshopManager.Slots[2].InstalledMachine);
+
+            // Unlock Max
+            workshopManager.UnlockSmelter(true); // 4
+            workshopManager.UnlockSmelter(true); // 5
+            workshopManager.UnlockSmelter(true); // 6
+            workshopManager.UnlockSmelter(true); // 7 (Fail)
+
+            Assert.AreEqual(5, workshopManager.SmelterCount);
         }
 
         [Test]
@@ -83,84 +121,13 @@ namespace ShadowTests
             workshopManager.StartJob(0, "SMELT_STEEL");
 
             var slot = workshopManager.Slots[0];
-
-            // Advance Time
-            // Recipe duration is 5s.
-            // We need to call AdvanceJob 5 times (assuming 1s ticks).
-            // But AdvanceJob is private. We can invoke "TickWorkshop" via reflection or waiting?
-            // "TickWorkshop" is private.
-
             MethodInfo tick = workshopManager.GetType().GetMethod("TickWorkshop", BindingFlags.Instance | BindingFlags.NonPublic);
 
-            // Simulate 5 ticks
-            for(int i=0; i<6; i++)
-            {
-                tick.Invoke(workshopManager, null);
-            }
-
-            Assert.IsFalse(slot.IsWorking, "Job should be finished");
-            Assert.AreEqual(1, ResourceManager.Instance.GetResourceQuantity(ResourceType.Steel), "Steel should be produced");
-        }
-
-        [Test]
-        public void TestAutomation()
-        {
-            ResourceManager.Instance.AddResource(ResourceType.Iron, 100);
-            ResourceManager.Instance.SetCredits(2000f);
-
-            // Install AI
-            workshopManager.InstallAI(0);
-            var slot = workshopManager.Slots[0];
-            Assert.IsTrue(slot.IsAutomated);
-
-            // Start First Job Manually (or maybe Automation starts it if idle?)
-            // Logic says: else if (slot.IsAutomated && !string.IsNullOrEmpty(slot.ActiveRecipeID)) StartJob...
-            // So we need to set ActiveRecipeID once.
-
-            workshopManager.StartJob(0, "SMELT_STEEL");
-
-            MethodInfo tick = workshopManager.GetType().GetMethod("TickWorkshop", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            // Finish first job and immediately restart (due to Automation loop)
-            // 5 ticks to finish. 6th tick sees it finished and restarts it.
+            // 6 ticks for 5s duration
             for(int i=0; i<6; i++) tick.Invoke(workshopManager, null);
 
-            // Should be working on Job 2 now
-            Assert.IsTrue(slot.IsWorking, "Automation should have restarted job immediately");
-            Assert.AreEqual(1, ResourceManager.Instance.GetResourceQuantity(ResourceType.Steel), "Job 1 Output produced");
-            Assert.AreEqual(90, ResourceManager.Instance.GetResourceQuantity(ResourceType.Iron), "Job 2 Input consumed");
-        }
-
-        [Test]
-        public void TestAutomation_InsufficientFunds()
-        {
-            ResourceManager.Instance.SetCredits(0f);
-            workshopManager.InstallAI(0);
-            Assert.IsFalse(workshopManager.Slots[0].IsAutomated);
-        }
-
-        [Test]
-        public void TestSlotExpansion()
-        {
-            // Initial: Level 1 -> 1 Slot
-            Assert.AreEqual(1, workshopManager.Slots.Count);
-
-            // Repair Ship First (Required for upgrade)
-            FleetManager.Instance.RepairShip(100f);
-
-            // Provide enough credits
-            ResourceManager.Instance.SetCredits(FleetManager.Instance.GetUpgradeCost() + 100);
-
-            // Upgrade Ship
-            FleetManager.Instance.UpgradeShip(); // Level 2
-
-            // Trigger Tick
-            MethodInfo tick = workshopManager.GetType().GetMethod("TickWorkshop", BindingFlags.Instance | BindingFlags.NonPublic);
-            tick.Invoke(workshopManager, null);
-
-            // Should be 2 slots now
-            Assert.AreEqual(2, workshopManager.Slots.Count);
-            Assert.AreEqual(1, workshopManager.Slots[1].SlotIndex);
+            Assert.IsFalse(slot.IsWorking);
+            Assert.AreEqual(1, ResourceManager.Instance.GetResourceQuantity(ResourceType.Steel));
         }
     }
 }

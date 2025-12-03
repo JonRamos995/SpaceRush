@@ -8,7 +8,8 @@
       "OutputResource": 5,
       "OutputAmount": 1,
       "DurationSeconds": 5.0,
-      "RequiredTechID": "EFFICIENCY_1"
+      "RequiredTechID": "EFFICIENCY_1",
+      "RequiredMachine": 1
     },
     {
       "ID": "ASSEMBLE_CIRCUIT",
@@ -18,7 +19,8 @@
       "OutputResource": 6,
       "OutputAmount": 1,
       "DurationSeconds": 10.0,
-      "RequiredTechID": "MARKET_ANALYSIS"
+      "RequiredTechID": "MARKET_ANALYSIS",
+      "RequiredMachine": 2
     },
     {
       "ID": "SMELT_IRON_INGOT",
@@ -28,7 +30,8 @@
       "OutputResource": 8,
       "OutputAmount": 1,
       "DurationSeconds": 2.0,
-      "RequiredTechID": null
+      "RequiredTechID": null,
+      "RequiredMachine": 1
     },
     {
       "ID": "SMELT_GOLD_INGOT",
@@ -38,7 +41,8 @@
       "OutputResource": 9,
       "OutputAmount": 1,
       "DurationSeconds": 3.0,
-      "RequiredTechID": null
+      "RequiredTechID": null,
+      "RequiredMachine": 1
     },
     {
       "ID": "CRAFT_DRILL",
@@ -48,7 +52,8 @@
       "OutputResource": 11,
       "OutputAmount": 1,
       "DurationSeconds": 10.0,
-      "RequiredTechID": "EFFICIENCY_1"
+      "RequiredTechID": "EFFICIENCY_1",
+      "RequiredMachine": 2
     },
     {
       "ID": "CRAFT_AUTOMINER",
@@ -58,7 +63,8 @@
       "OutputResource": 12,
       "OutputAmount": 1,
       "DurationSeconds": 30.0,
-      "RequiredTechID": "AUTO_LOGISTICS"
+      "RequiredTechID": "AUTO_LOGISTICS",
+      "RequiredMachine": 2
     }
   ]
 }
