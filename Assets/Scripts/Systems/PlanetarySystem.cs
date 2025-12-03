@@ -72,6 +72,31 @@ namespace SpaceRush.Systems
                 multiplier += loc.Infrastructure.InstalledMachines[ResourceType.AutoMiner] * 0.1f; // +10% per AutoMiner
             }
 
+            // Tech Bonuses
+            if (ResearchManager.Instance != null)
+            {
+                if (ResearchManager.Instance.IsTechUnlocked("EFFICIENCY_1")) multiplier += 0.1f;
+
+                switch (loc.Definition.Biome)
+                {
+                    case BiomeType.Barren:
+                        if (ResearchManager.Instance.IsTechUnlocked("ENV_SUIT_MK2")) multiplier += 0.2f;
+                        break;
+                    case BiomeType.Volcanic:
+                        if (ResearchManager.Instance.IsTechUnlocked("THERMAL_SHIELDING")) multiplier += 0.2f;
+                        break;
+                    case BiomeType.Ice:
+                        if (ResearchManager.Instance.IsTechUnlocked("CRYO_STABILIZER")) multiplier += 0.2f;
+                        break;
+                    case BiomeType.GasGiant:
+                        if (ResearchManager.Instance.IsTechUnlocked("GAS_SCOOPS")) multiplier += 0.2f;
+                        break;
+                    case BiomeType.AsteroidField:
+                        if (ResearchManager.Instance.IsTechUnlocked("MICRO_G_MINING")) multiplier += 0.2f;
+                        break;
+                }
+            }
+
             productionAmount = Mathf.FloorToInt(productionAmount * multiplier);
 
             // Check Station Capacity

@@ -14,5 +14,6 @@ namespace SpaceRush.Models
         public int OutputAmount;
         public float DurationSeconds;
         public string RequiredTechID;
+        public MachineType RequiredMachine;
     }
 }
