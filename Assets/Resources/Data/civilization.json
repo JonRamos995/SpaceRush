@@ -1,0 +1,29 @@
+{
+  "Items": [
+    {
+      "ID": "RETENTION_1",
+      "Name": "Resource Cache",
+      "Description": "Keep 10% of resources after Ascension.",
+      "Cost": 50.0,
+      "EffectDataList": [
+        {
+          "EffectType": "Retention",
+          "Value": 0.1
+        }
+      ]
+    },
+    {
+      "ID": "GLOBAL_SPEED_1",
+      "Name": "Temporal Flux",
+      "Description": "Increase Global Mining Speed by 50%.",
+      "Cost": 100.0,
+      "EffectDataList": [
+        {
+          "EffectType": "StatMultiplier",
+          "Target": "GlobalMiningSpeed",
+          "Value": 0.5
+        }
+      ]
+    }
+  ]
+}

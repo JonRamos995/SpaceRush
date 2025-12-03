@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 namespace SpaceRush.Data
 {
-    [CreateAssetMenu(fileName = "New Location", menuName = "SpaceRush/Location")]
-    public class LocationDefinition : ScriptableObject
+    [System.Serializable]
+    public class LocationDefinition
     {
         public string ID;
         public string Name;

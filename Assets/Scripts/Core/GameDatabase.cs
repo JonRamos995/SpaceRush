@@ -18,6 +18,7 @@ namespace SpaceRush.Core
         public List<LocationDefinition> Locations { get; private set; }
         public List<TechDefinition> Technologies { get; private set; }
         public List<RecipeDefinition> Recipes { get; private set; }
+        public List<MetaUpgradeDefinition> MetaUpgrades { get; private set; }
 
         private void Awake()
         {
@@ -43,10 +44,30 @@ namespace SpaceRush.Core
             Locations = new List<LocationDefinition>();
             Technologies = new List<TechDefinition>();
             Recipes = new List<RecipeDefinition>();
+            MetaUpgrades = new List<MetaUpgradeDefinition>();
 
             LoadTechnologies();
             LoadLocations();
             LoadRecipes();
+            LoadMetaUpgrades();
+        }
+
+        private void LoadMetaUpgrades()
+        {
+            TextAsset file = Resources.Load<TextAsset>("Data/civilization");
+            if (file != null)
+            {
+                CivilizationDataWrapper wrapper = JsonUtility.FromJson<CivilizationDataWrapper>(file.text);
+                if (wrapper != null && wrapper.Items != null)
+                {
+                    MetaUpgrades = wrapper.Items;
+                    GameLogger.Log($"Loaded {MetaUpgrades.Count} meta upgrades from JSON.");
+                }
+            }
+            else
+            {
+                GameLogger.LogError("Could not load Data/civilization.json");
+            }
         }
 
         private void LoadRecipes()

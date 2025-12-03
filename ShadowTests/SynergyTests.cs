@@ -43,7 +43,7 @@ namespace ShadowTests
         public void TestSynergyConsumptionAndBoost()
         {
             // 1. Setup Location
-            var def = ScriptableObject.CreateInstance<LocationDefinition>();
+            var def = new LocationDefinition();
             def.ID = "SYNERGY_PLANET";
             def.AvailableResources = new List<ResourceType> { ResourceType.Iron };
             def.HasSynergy = true;
