@@ -9,6 +9,18 @@ namespace SpaceRush.Core
         public static ResourceManager Instance { get; private set; }
 
         public float Credits { get; private set; }
+        public int CurrentCargo
+        {
+            get
+            {
+                int total = 0;
+                foreach (var res in resources.Values)
+                {
+                    total += res.Quantity;
+                }
+                return total;
+            }
+        }
         private Dictionary<ResourceType, ResourceData> resources;
 
         private void Awake()
