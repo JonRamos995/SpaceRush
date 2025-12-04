@@ -197,6 +197,20 @@ namespace SpaceRush.Systems
             slot.Progress = 0f;
         }
 
+        public void CancelJob(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= Slots.Count) return;
+            var slot = Slots[slotIndex];
+
+            if (slot.IsWorking)
+            {
+                slot.IsWorking = false;
+                slot.Progress = 0f;
+                slot.ActiveRecipeID = null;
+                GameLogger.Log($"Cancelled job in Slot {slotIndex}");
+            }
+        }
+
         public void InstallAI(int slotIndex)
         {
              if (slotIndex < 0 || slotIndex >= Slots.Count) return;
