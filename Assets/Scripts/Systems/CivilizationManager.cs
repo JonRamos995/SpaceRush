@@ -61,6 +61,7 @@ namespace SpaceRush.Systems
 
         private void InitializeUpgrades()
         {
+            availableUpgrades.Clear();
             if (GameDatabase.Instance != null && GameDatabase.Instance.MetaUpgrades != null)
             {
                 availableUpgrades.AddRange(GameDatabase.Instance.MetaUpgrades);
