@@ -1,0 +1,79 @@
+:root {
+    --color-background: #1a1a1a;
+    --color-panel: #2d2d2d;
+    --color-text: #ffffff;
+    --color-accent: #00d1ff;
+    --color-button: #3d3d3d;
+    --color-button-hover: #4d4d4d;
+    --font-size-normal: 14px;
+    --font-size-header: 18px;
+    --spacing: 8px;
+}
+
+.screen-container {
+    flex-grow: 1;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    padding: var(--spacing);
+}
+
+.header-bar {
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: var(--color-panel);
+    padding: var(--spacing);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--color-accent);
+}
+
+.nav-bar {
+    flex-direction: row;
+    justify-content: center;
+    background-color: var(--color-panel);
+    padding: var(--spacing);
+    border-top-width: 1px;
+    border-top-color: var(--color-accent);
+}
+
+.content-area {
+    flex-grow: 1;
+    padding: var(--spacing);
+}
+
+.panel {
+    display: none; /* Hidden by default */
+    flex-grow: 1;
+}
+
+.panel--active {
+    display: flex;
+}
+
+.button {
+    background-color: var(--color-button);
+    color: var(--color-text);
+    border-width: 1px;
+    border-color: var(--color-accent);
+    padding: 8px 16px;
+    margin: 0 4px;
+    -unity-font-style: bold;
+}
+
+.button:hover {
+    background-color: var(--color-button-hover);
+}
+
+.list-item {
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: var(--color-panel);
+    padding: 8px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+}
+
+.label-title {
+    font-size: var(--font-size-header);
+    -unity-font-style: bold;
+    margin-bottom: var(--spacing);
+}
