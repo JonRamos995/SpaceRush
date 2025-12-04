@@ -21,7 +21,20 @@ namespace SpaceRush.Systems
 
         // Meta Progression
         private List<MetaUpgradeDefinition> availableUpgrades = new List<MetaUpgradeDefinition>();
+        public IReadOnlyList<MetaUpgradeDefinition> AvailableUpgrades => availableUpgrades;
+
         private HashSet<string> unlockedUpgradeIDs = new HashSet<string>();
+
+        public bool IsUpgradeUnlocked(string upgradeID)
+        {
+            return unlockedUpgradeIDs.Contains(upgradeID);
+        }
+
+        public float GetProjectedAscensionGain()
+        {
+            // Current formula: 100 per level (Level + 1 because we gain based on next level).
+            return (Level + 1) * 100f;
+        }
 
         // Runtime Effects
         private Dictionary<string, float> globalMultipliers = new Dictionary<string, float>();

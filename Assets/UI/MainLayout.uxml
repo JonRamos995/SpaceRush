@@ -68,6 +68,21 @@
                 <ui:ScrollView name="Research-List" />
             </ui:VisualElement>
 
+            <!-- Civilization View -->
+            <ui:VisualElement name="View-Civilization" class="panel">
+                <ui:Label text="Civilization Ascension" class="label-title" />
+
+                <ui:VisualElement style="flex-direction: row; justify-content: space-around; margin-bottom: 10px; background-color: rgba(0,0,0,0.2); padding: 5px;">
+                    <ui:Label name="Civ-LevelLabel" text="Civ Level: 1" style="color: rgb(255, 215, 0); -unity-font-style: bold;" />
+                    <ui:Label name="Civ-NanitesLabel" text="Nanites: 0" style="color: rgb(0, 255, 255); -unity-font-style: bold;" />
+                </ui:VisualElement>
+
+                <ui:Label text="Meta-Upgrades" style="margin-top: 5px; margin-bottom: 5px; opacity: 0.8;" />
+                <ui:ScrollView name="Meta-Upgrade-List" style="flex-grow: 1; margin-bottom: 10px;" />
+
+                <ui:Button name="Btn-Ascend" text="ASCEND (Reset Game)" class="button" style="background-color: rgb(150, 50, 50); margin-top: 10px; height: 50px;" />
+            </ui:VisualElement>
+
             <!-- Log View -->
             <ui:VisualElement name="View-Log" class="panel">
                 <ui:Label text="Mission Log" class="label-title" />
@@ -84,6 +99,7 @@
             <ui:Button name="Btn-Market" text="TRADE" class="button" />
             <ui:Button name="Btn-Logistics" text="TRNS" class="button" />
             <ui:Button name="Btn-Research" text="TECH" class="button" />
+            <ui:Button name="Btn-Civilization" text="CIV" class="button" />
             <ui:Button name="Btn-Log" text="LOGS" class="button" />
         </ui:VisualElement>
 
