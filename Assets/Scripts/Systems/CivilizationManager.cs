@@ -21,7 +21,7 @@ namespace SpaceRush.Systems
 
         // Meta Progression
         private List<MetaUpgradeDefinition> availableUpgrades = new List<MetaUpgradeDefinition>();
-        public List<MetaUpgradeDefinition> AvailableUpgrades => availableUpgrades;
+        public IReadOnlyList<MetaUpgradeDefinition> AvailableUpgrades => availableUpgrades;
 
         private HashSet<string> unlockedUpgradeIDs = new HashSet<string>();
 
