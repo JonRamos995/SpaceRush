@@ -20,6 +20,8 @@ Key systems are functional:
 
 However, the project is **NOT** yet production-ready. Several systems rely on hardcoded logic or mock implementations that must be replaced with scalable, real-world solutions before release.
 
+**Recent Update:** The user interface has been completely migrated from legacy UGUI to **Unity 6 UI Toolkit**, improving performance and maintainability.
+
 ---
 
 ## Missing / Incomplete Features
@@ -56,10 +58,11 @@ To achieve the "Production Ready" goal, the following critical tasks must be com
 | **Planetary System** | **60%** | Functional, but heavily coupled. `ProduceResources` contains hardcoded `if (Tech == "ENV_SUIT_MK2")` checks, making it hard to expand without code changes. |
 | **Civilization System**| **40%** | Prestige logic works, but the Upgrade content is hardcoded in the class. Needs a full data-driven refactor. |
 | **Ads & Notifications**| **10%** | Purely mock implementations. Logic structure exists, but no real functionality. |
+| **UI System** | **100%** | Fully migrated to Unity 6 UI Toolkit. Uses UXML/USS for layout/style and a centralized controller. |
 
 ---
 
 ## Technical Notes for Developers
 *   **Testing:** Run `dotnet test` in `ShadowTests/` to verify backend logic changes.
 *   **Data:** All game data should live in `Assets/Resources/Data/`. Avoid adding new content directly in C# classes.
-*   **UI:** UI scripts are located in `Assets/Scripts/UI` and connect to Managers via Singletons. Ensure Managers emit events or use callbacks rather than UI polling where possible.
+*   **UI:** The project uses **Unity UI Toolkit** (Unity 6). UI Logic is in `Assets/Scripts/UI/GameUIController.cs`. Layouts are in `Assets/UI/MainLayout.uxml` and styling in `Assets/UI/Theme.uss`.
