@@ -18,6 +18,7 @@ namespace SpaceRush.Core
         public List<LocationDefinition> Locations { get; private set; }
         public List<TechDefinition> Technologies { get; private set; }
         public List<RecipeDefinition> Recipes { get; private set; }
+        public List<MetaUpgradeDefinition> MetaUpgrades { get; private set; }
 
         private void Awake()
         {
@@ -43,10 +44,54 @@ namespace SpaceRush.Core
             Locations = new List<LocationDefinition>();
             Technologies = new List<TechDefinition>();
             Recipes = new List<RecipeDefinition>();
+            MetaUpgrades = new List<MetaUpgradeDefinition>();
 
             LoadTechnologies();
             LoadLocations();
             LoadRecipes();
+            LoadCivilization();
+        }
+
+        private void LoadCivilization()
+        {
+            TextAsset file = Resources.Load<TextAsset>("Data/civilization");
+            if (file != null)
+            {
+                CivilizationDataWrapper wrapper = JsonUtility.FromJson<CivilizationDataWrapper>(file.text);
+                if (wrapper != null && wrapper.Items != null)
+                {
+                    foreach (var item in wrapper.Items)
+                    {
+                        var def = ScriptableObject.CreateInstance<MetaUpgradeDefinition>();
+                        def.ID = item.ID;
+                        def.Name = item.Name;
+                        def.Description = item.Description;
+                        def.Cost = item.Cost;
+
+                        // Parse Effect
+                        if (item.EffectType == "Retention")
+                        {
+                            var eff = ScriptableObject.CreateInstance<MetaRetentionEffect>();
+                            eff.PercentageToKeep = item.Param2;
+                            def.Effect = eff;
+                        }
+                        else if (item.EffectType == "StatMultiplier")
+                        {
+                            var eff = ScriptableObject.CreateInstance<MetaStatMultiplierEffect>();
+                            eff.StatName = item.Param1;
+                            eff.Multiplier = item.Param2;
+                            def.Effect = eff;
+                        }
+
+                        MetaUpgrades.Add(def);
+                    }
+                    GameLogger.Log($"Loaded {MetaUpgrades.Count} meta upgrades from JSON.");
+                }
+            }
+            else
+            {
+                GameLogger.LogError("Could not load Data/civilization.json");
+            }
         }
 
         private void LoadRecipes()

@@ -21,7 +21,20 @@ namespace SpaceRush.Systems
 
         // Meta Progression
         private List<MetaUpgradeDefinition> availableUpgrades = new List<MetaUpgradeDefinition>();
+        public IReadOnlyList<MetaUpgradeDefinition> AvailableUpgrades => availableUpgrades;
+
         private HashSet<string> unlockedUpgradeIDs = new HashSet<string>();
+
+        public bool IsUpgradeUnlocked(string upgradeID)
+        {
+            return unlockedUpgradeIDs.Contains(upgradeID);
+        }
+
+        public float GetProjectedAscensionGain()
+        {
+            // Current formula: 100 per level (Level + 1 because we gain based on next level).
+            return (Level + 1) * 100f;
+        }
 
         // Runtime Effects
         private Dictionary<string, float> globalMultipliers = new Dictionary<string, float>();
@@ -48,31 +61,15 @@ namespace SpaceRush.Systems
 
         private void InitializeUpgrades()
         {
-            // In a real app, load from Resources/GameDatabase.
-            // Here we manually create some for the task.
-
-            // 1. Retention Upgrade
-            var retDef = ScriptableObject.CreateInstance<MetaUpgradeDefinition>();
-            retDef.ID = "RETENTION_1";
-            retDef.Name = "Resource Cache";
-            retDef.Description = "Keep 10% of resources after Ascension.";
-            retDef.Cost = 50f;
-            var retEff = ScriptableObject.CreateInstance<MetaRetentionEffect>();
-            retEff.PercentageToKeep = 0.1f;
-            retDef.Effect = retEff;
-            availableUpgrades.Add(retDef);
-
-            // 2. Speed Upgrade
-            var spdDef = ScriptableObject.CreateInstance<MetaUpgradeDefinition>();
-            spdDef.ID = "GLOBAL_SPEED_1";
-            spdDef.Name = "Temporal Flux";
-            spdDef.Description = "Increase Global Mining Speed by 50%.";
-            spdDef.Cost = 100f;
-            var spdEff = ScriptableObject.CreateInstance<MetaStatMultiplierEffect>();
-            spdEff.StatName = "GlobalMiningSpeed";
-            spdEff.Multiplier = 0.5f; // Additive +50%
-            spdDef.Effect = spdEff;
-            availableUpgrades.Add(spdDef);
+            if (GameDatabase.Instance != null && GameDatabase.Instance.MetaUpgrades != null)
+            {
+                availableUpgrades.AddRange(GameDatabase.Instance.MetaUpgrades);
+            }
+            else
+            {
+                // Fallback for tests if GameDatabase isn't present (though it should be)
+                GameLogger.LogError("CivilizationManager: GameDatabase not ready or missing upgrades.");
+            }
         }
 
         public void LoadData(CivilizationSaveData data)
