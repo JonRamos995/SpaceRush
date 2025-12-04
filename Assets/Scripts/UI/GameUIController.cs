@@ -48,6 +48,12 @@ namespace SpaceRush.UI
         private ScrollView _researchList;
         private ScrollView _logList;
 
+        // Civilization Elements
+        private Label _civLevelLabel;
+        private Label _civNanitesLabel;
+        private ScrollView _metaUpgradeList;
+        private Button _btnAscend;
+
         private void Awake()
         {
             if (Instance == null)
@@ -85,6 +91,7 @@ namespace SpaceRush.UI
             BindPanel("View-Market", "Btn-Market");
             BindPanel("View-Logistics", "Btn-Logistics");
             BindPanel("View-Research", "Btn-Research");
+            BindPanel("View-Civilization", "Btn-Civilization");
             BindPanel("View-Log", "Btn-Log");
 
             // Location Details Panel (No Nav Button, manual switch)
@@ -99,6 +106,17 @@ namespace SpaceRush.UI
             _logisticsList = _root.Q<ScrollView>("Logistics-List");
             _researchList = _root.Q<ScrollView>("Research-List");
             _logList = _root.Q<ScrollView>("Log-List");
+
+            // Civilization Bindings
+            _civLevelLabel = _root.Q<Label>("Civ-LevelLabel");
+            _civNanitesLabel = _root.Q<Label>("Civ-NanitesLabel");
+            _metaUpgradeList = _root.Q<ScrollView>("Meta-Upgrade-List");
+            _btnAscend = _root.Q<Button>("Btn-Ascend");
+
+            if (_btnAscend != null)
+            {
+                _btnAscend.clicked += OnAscendClicked;
+            }
 
             // Dashboard Buttons
             _btnRepair = _root.Q<Button>("Btn-RepairShip");
@@ -207,6 +225,9 @@ namespace SpaceRush.UI
                     break;
                 case "View-Research":
                     RebuildResearchList();
+                    break;
+                case "View-Civilization":
+                    RebuildCivilizationList();
                     break;
                 case "View-LocationDetails":
                     UpdateLocationDetails(_selectedLocationID);
@@ -579,6 +600,79 @@ namespace SpaceRush.UI
                 label.style.borderBottomColor = new StyleColor(new Color(1, 1, 1, 0.1f));
                 _logList.Add(label);
             }
+        }
+
+        // --- CIVILIZATION / PRESTIGE ---
+
+        private void RebuildCivilizationList()
+        {
+            if (CivilizationManager.Instance == null) return;
+
+            // 1. Update Header Stats
+            if (_civLevelLabel != null)
+                _civLevelLabel.text = $"Civ Level: {CivilizationManager.Instance.Level}";
+
+            if (_civNanitesLabel != null)
+                _civNanitesLabel.text = $"Nanites: {CivilizationManager.Instance.Nanites:N0}";
+
+            // 2. Build Upgrade List
+            if (_metaUpgradeList == null) return;
+            _metaUpgradeList.Clear();
+
+            foreach (var upgrade in CivilizationManager.Instance.AvailableUpgrades)
+            {
+                var row = new VisualElement();
+                row.AddToClassList("list-item");
+
+                var info = new Label($"{upgrade.Name}\n{upgrade.Description}\nCost: {upgrade.Cost} Nanites");
+                info.style.flexGrow = 1;
+
+                var btn = new Button();
+                // Check if unlocked
+                bool isUnlocked = CivilizationManager.Instance.IsUpgradeUnlocked(upgrade.ID);
+                if (isUnlocked)
+                {
+                    btn.text = "Owned";
+                    btn.SetEnabled(false);
+                }
+                else
+                {
+                    btn.text = "Buy";
+                    btn.clicked += () => {
+                        if (CivilizationManager.Instance.BuyUpgrade(upgrade.ID))
+                        {
+                            RebuildCivilizationList(); // Refresh to update Nanite count and disable button
+                        }
+                    };
+                    btn.SetEnabled(CivilizationManager.Instance.Nanites >= upgrade.Cost);
+                }
+                btn.AddToClassList("button");
+
+                row.Add(info);
+                row.Add(btn);
+                _metaUpgradeList.Add(row);
+            }
+
+            // 3. Update Ascend Button Context
+            // Show what they will gain if they reset now
+            if (_btnAscend != null)
+            {
+                float gain = CivilizationManager.Instance.GetProjectedAscensionGain();
+                _btnAscend.text = $"ASCEND\n(Reset & Gain {gain:N0} Nanites)";
+            }
+        }
+
+        private void OnAscendClicked()
+        {
+            if (CivilizationManager.Instance == null) return;
+
+            CivilizationManager.Instance.Ascend();
+
+            // After ascension, the PersistenceManager resets data and saves.
+            // We should refresh the dashboard to reflect the "fresh start".
+            SwitchPanel("View-Dashboard");
+
+            GameLogger.Log("Civilization Ascended! Welcome to the new era.");
         }
     }
 }
