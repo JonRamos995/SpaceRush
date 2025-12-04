@@ -265,7 +265,7 @@ namespace SpaceRush.UI
             if (LocationManager.Instance != null && _locationLabel != null)
             {
                  string locName = LocationManager.Instance.CurrentLocation != null ?
-                    LocationManager.Instance.CurrentLocation.Name : "Deep Space";
+                    LocationManager.Instance.CurrentLocation.Definition.Name : "Deep Space";
                 _locationLabel.text = $"Location: {locName}";
             }
 
@@ -408,7 +408,7 @@ namespace SpaceRush.UI
                 headerRow.style.flexDirection = FlexDirection.Row;
                 headerRow.style.justifyContent = Justify.SpaceBetween;
 
-                var title = new Label($"Slot {index + 1}: {slot.Type}");
+                var title = new Label($"Slot {index + 1}: {slot.InstalledMachine}");
                 title.style.unityFontStyleAndWeight = FontStyle.Bold;
                 headerRow.Add(title);
 
@@ -432,13 +432,13 @@ namespace SpaceRush.UI
 
                 row.Add(headerRow);
 
-                if (slot.IsBusy)
+                if (slot.IsWorking)
                 {
                     var status = new Label($"Crafting... {slot.Progress:P0}");
                     row.Add(status);
 
                     var cancelBtn = new Button(() => {
-                        slot.CancelCrafting();
+                        WorkshopManager.Instance.CancelJob(index);
                         RebuildWorkshopList();
                     });
                     cancelBtn.text = "Cancel";
@@ -454,13 +454,13 @@ namespace SpaceRush.UI
                     recipeContainer.style.flexDirection = FlexDirection.Row;
                     recipeContainer.style.flexWrap = Wrap.Wrap;
 
-                    foreach (var recipe in WorkshopManager.Instance.GetRecipesForMachine(slot.Type))
+                    foreach (var recipe in WorkshopManager.Instance.GetRecipesForMachine(slot.InstalledMachine))
                     {
                         var craftBtn = new Button(() => {
                             WorkshopManager.Instance.StartJob(index, recipe.ID);
                             RebuildWorkshopList();
                         });
-                        craftBtn.text = $"Craft {recipe.OutputID}";
+                        craftBtn.text = $"Craft {recipe.OutputResource}";
                         craftBtn.AddToClassList("button");
                         recipeContainer.Add(craftBtn);
                     }
